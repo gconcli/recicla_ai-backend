@@ -89,31 +89,87 @@
     }
 
     class UsuarioDAOMySQL implements IUsuarioDAO {
-        public function login(string $login, string $senha) : ?UsuarioVO {
+        private $nomeTabela = UsuarioVO::getNomeTabela();
+        private $nomesColunasTabela = UsuarioVO::getNomesColunasTabela();
+        private $quantColunasTabela = count($nomesColunasTabela);
 
+        public function login(string $login, string $senha) : ?UsuarioVO {
+            $query = "SELECT * FROM $this->nomeTabela WHERE $this->nomesColunasTabela[3] = ?";
+            $con = getConexaoBancoMySQL();
+            $stmt = $con->prepare($query);
+            $stmt->bind_param("ss", $login);
+            $rs = $stmt->get_result();
+            if(!$rs)
+                return null;
+            else {
+                $linha = $rs->fetch_assoc();
+                $hash = $linha[$this->nomesColunasTabela[4]];
+                if(password_verify($senha, $hash)) {
+                    $uVOsaida = new UsuarioVO();
+                    $uVOsaida->setId($linha[$this->nomesColunasTabela[0]]);
+                    $uVOsaida->setIdImagem($linha[$this->nomesColunasTabela[1]]);
+                    $uVOsaida->setIdTipoUsuario($linha[$this->nomesColunasTabela[2]]);
+                    $uVOsaida->setLogin($linha[$this->nomesColunasTabela[3]]);
+                    $uVOsaida->setSenha($hash);
+                    $uVOsaida->setNome($linha[$this->nomesColunasTabela[5]]);
+                    $uVOsaida->setEmail($linha[$this->nomesColunasTabela[6]]);
+                    $uVOsaida->setDataAniversario($linha[$this->nomesColunasTabela[7]]);
+                    $uVOsaida->setDescricao($linha[$this->nomesColunasTabela[8]]);
+                    $uVOsaida->setDataCriacao($linha[$this->nomesColunasTabela[9]]);
+                    $uVOsaida->setAtivo($linha[$this->nomesColunasTabela[10]]);
+
+                    return $uVOsaida;
+                }
+                else
+                    return null;
+                
+            }
         }
         public function insert(UsuarioVO $uVO): bool {
-            $nomeTabela = UsuarioVO::getNomeTabela();
-            $nomesColunasTabela = UsuarioVO::getNomesColunasTabela();
-            $quantColunasTabela = count($nomesColunasTabela);
 
-            $sqlInsertInto = "INSERT INTO $nomeTabela (";
+            $sqlInsertInto = "INSERT INTO $this->nomeTabela(";
             $sqlValues = "VALUES (";
 
-            for ($i = 1; $i < $quantColunasTabela; $i++) { 
-                if($i < $quantColunasTabela - 1) {
-                    $sqlInsertInto .= $nomesColunasTabela[$i] . ", ";
+            for ($i = 1; $i < $this->quantColunasTabela; $i++) { 
+                if($i < $this->quantColunasTabela - 1) {
+                    $sqlInsertInto .= $this->nomesColunasTabela[$i] . ", ";
                     $sqlValues .= "?, ";
                 }
                 else {
-                    $sqlInsertInto .= $nomesColunasTabela[$i] . ") ";
+                    $sqlInsertInto .= $this->nomesColunasTabela[$i] . ") ";
                     $sqlValues .= "?)";
                 }
             }
 
+            $con = getConexaoBancoMySQL();
             $query = "$sqlInsertInto $sqlValues";
+            $stmt = $con->prepare($query);
+            $dadosUsuario = [$uVO->getId(),
+                $uVO->getIdImagem(),
+                $uVO->getIdTipoUsuario(),
+                $uVO->getLogin(),
+                $uVO->getSenha(),
+                $uVO->getNome(),
+                $uVO->getEmail(),
+                $uVO->getDataAniversario(),
+                $uVO->getDescricao(),
+                $uVO->getDataCriacao(),
+                $uVO->isAtivo()
+            ];
 
-            
+            $stmt->bind_param("iissssssss",
+                $dadosUsuario[1],
+                $dadosUsuario[2],
+                $dadosUsuario[3],
+                $dadosUsuario[4],
+                $dadosUsuario[5],
+                $dadosUsuario[6],
+                $dadosUsuario[7],
+                $dadosUsuario[8],
+                $dadosUsuario[9],
+                $dadosUsuario[10]
+            );
+            return $stmt->execute();
         }
         public function selectAll(): ?UsuarioVO {
 
