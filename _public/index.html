@@ -41,7 +41,7 @@
     <button id="btnProx">&raquo;</button>
 
     <main>
-        <section>
+        <section id="introducao">
             <h2>Bem-vindo ao Recicla Aí!</h2>
             <p>O Recicla Aí foi criado para conscientizar e informar sobre a importância da reciclagem de eletrônicos.
                 Com o aumento do uso de dispositivos eletrônicos, o descarte inadequado se tornou um grande desafio para
@@ -50,6 +50,24 @@
                 por que reciclar.</p>
             <p>Aqui, você encontrará tudo o que precisa saber para contribuir com um futuro mais sustentável. Junte-se a
                 nós nessa missão de cuidar do planeta!</p>
+        </section>
+        <section id="cadastro">
+            <h2>Cadastre-se para mais informações!</h2>
+            <form action="" method="post"> <!-- TODO: Depois configurar o back-end -->
+                <label for="nome">Nome completo:</label>
+                <input type="text" id="nome" name="nome" placeholder="José da Silva" required>
+                <br>
+                <label for="email">E-mail:</label>
+                <input type="email" id="email" name="email" placeholder="exemplo@email.com" required>
+                <br>
+                <label for="senha">Senha:</label>
+                <input type="password" id="senha" name="senha" placeholder="Digite sua senha" required>
+                <br>
+                <label for="confirmar-senha">Confirmar Senha:</label>
+                <input type="password" id="confirmar-senha" name="confirmar-senha" placeholder="Confirme sua senha" required>
+                <br>
+                <button type="submit">Cadastrar</button>
+            </form>
         </section>
     </main>
 
