@@ -65,8 +65,6 @@ a:hover {
     width: 100%;
 }
 
-
-
 /* Classes */
 .card-imagem {
     display: inline-block;
@@ -281,6 +279,11 @@ main section h2 {
     margin-left: 0.4rem;
 }
 
+main h3 {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 1.2em;
+}
+
 main section p, main section li {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     text-align: justify;
@@ -298,6 +301,10 @@ input {
     padding: 0.2rem;
     width: 100%;
     margin: 0.2rem 0.2rem 0.7rem 0.2rem; /* Superior, direita, inferior, esquerda */
+}
+
+h3 a {
+    color: rgb(45, 54, 40);
 }
 
 /* Footer */
