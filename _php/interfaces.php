@@ -1,7 +1,7 @@
 <?php
 
     interface IUsuarioDAO {
-        public function login(string $login, string $senha) : ?UsuarioVO;
+        public function login(string $login, string $senha) : UsuarioVO | bool | null;
         public function insert(UsuarioVO $uVO) : bool;
         public function selectAll() : ?UsuarioVO;
         public function selectWhere(UsuarioVO $uVO) : ?UsuarioVO;
