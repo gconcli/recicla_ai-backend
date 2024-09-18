@@ -1,4 +1,11 @@
 <?php
+    /**
+     * Um objeto que contém os dados necessários para todas as tabelas no banco de dados
+     * Estes dados são:
+     * - ID (INT)
+     * - Data de Criação (DATE)
+     * - Ativo (TINYINT(1))
+     */
     abstract class ObjetoVO {
         private $id;
         private $dataCriacao;
@@ -20,6 +27,19 @@
         public function setAtivo(bool $ativo) : void {$this->ativo = $ativo;}
     }
 
+    /**
+     * Um objeto que contém os dados necessários para a tabela 'Usuario' no banco de dados
+     * Estes dados são os dados de "ObjetoVO", mais:
+     * - ID da Imagem do Usuário (INT)
+     * - ID do Tipo de Usuário (INT)
+     * - Login VARCHAR(50)
+     * - Senha CHAR(60)
+     * - Nome VARCHAR(50)
+     * - E-mail VARCHAR(70)
+     * - Data de Aniversário (DATE)
+     * - Descrição VARCHAR(500)
+     * @extends ObjetoVO
+     */
     class UsuarioVO extends ObjetoVO {
         final private static $nomeTabela = "Usuario";
         final private static $nomesColunasTabela = [
@@ -97,6 +117,10 @@
         public function setDescricao(string $descricao): void {$this->descricao = $descricao;}
     }
 
+    /**
+     * Implementação de IUsuarioDAO
+     * @implements IUsuarioDAO
+     */
     class UsuarioDAOMySQL implements IUsuarioDAO {
         private $nomeTabela = UsuarioVO::getNomeTabela();
         private $nomesColunasTabela = UsuarioVO::getNomesColunasTabela();
@@ -138,6 +162,8 @@
                             else
                                 return false;
                         }
+                        else
+                            return null;
                     }
                     else
                         exit("Erro ao definir ResultSet em UsuarioDAOMySQL->login()");
