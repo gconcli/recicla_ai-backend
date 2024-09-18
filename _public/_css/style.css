@@ -65,6 +65,8 @@ a:hover {
     width: 100%;
 }
 
+
+
 /* Classes */
 .card-imagem {
     display: inline-block;
@@ -173,6 +175,16 @@ a:hover {
     border: groove #246600;
 }
 
+.botao-sessao {
+    border: none;
+    padding: 0.3rem;
+    font-size: 0.9em;
+    margin: 0.2rem 0.2rem 0.2rem 0;
+    background-color: #246600;
+    border-radius: 10%;
+    color: rgb(226, 226, 226);
+}
+
 /* Header */
 header div {
     background-color: #E1EED0;
@@ -249,11 +261,31 @@ main section h2 {
     float: right;
 }
 
+.form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
 main section p, main section li {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     text-align: justify;
     font-size: 1em;
     margin-bottom: 0.4em;
+}
+
+label {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+input {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 0.9em;
+    padding: 0.2rem;
+    margin: 0.2rem;
+    width: 100%;
+    margin-bottom: 0.5rem;
 }
 
 /* Footer */
