@@ -72,7 +72,17 @@
         public function setLogin(string $login): void {$this->login = $login;}
 
         public function getSenha(): ?string {return $this->senha;}
-        public function setSenha(string $senha): void {$this->senha = $senha;}
+        public function setSenha(string $senha): void {
+            $hash = false;
+            $opcoesHash = ['cost' => 12];
+            
+            do {
+                $hash = password_hash($senha, PASSWORD_BCRYPT, $opcoesHash);
+            }
+            while($hash === false);
+
+            $this->senha = $hash;
+        }
 
         public function getNome(): ?string {return $this->nome;}
         public function setNome(string $nome): void {$this->nome = $nome;}
@@ -107,6 +117,7 @@
 
                         $linha = $rs->fetch_assoc();
                         if(isset($linha) && $linha != false) {
+
                             $hash = $linha[$this->nomesColunasTabela[4]];
                             if(password_verify($senha, $hash)) {
                                 $uVOsaida = new UsuarioVO();
