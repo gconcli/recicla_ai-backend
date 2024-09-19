@@ -20,6 +20,9 @@
                 <button onclick="aumentarFonte()">A+</button>
                 <button onclick="diminuirFonte()">A-</button>
             </div>
+            <div id="menu-hamburguer" onclick="toggleMenu()">
+                &#9776; <!-- Ícone de hamburguer -->
+            </div>
             <ul>
                 <li><a href="index.html">Home</a></li>
                 <li><a href="o-que-e-descarte.html">O que é o Descarte Eletrônico</a></li>
@@ -29,6 +32,13 @@
                 <li><a href="entrar.html">Entrar</a></li>
             </ul>
         </div>
+
+        <script>
+            function toggleMenu() {
+                const menu = document.querySelector('ul');
+                menu.classList.toggle('active');
+            }
+        </script>
     </header>
 
     <img src="_imgs/eletronico.jpg" class="banner-image" alt="Imagem 1 de eletrônicos no carrossel"
