@@ -1,4 +1,9 @@
 <?php
+    include('phpToMail-master/PHPMailerAutoload.php'); 
+    include("./phpToMail/class.phpmailer.php"); 
+    include("./phpToMail/class.smtp.php");
+    include('recebe.php');
+
     /**
      * Um objeto que contém os dados necessários para todas as tabelas no banco de dados
      * Estes dados são:
@@ -45,7 +50,7 @@
      * - Descrição VARCHAR(500)
      * @extends ObjetoVO
      */
-    class UsuarioVO extends ObjetoVO {
+    final class UsuarioVO extends ObjetoVO {
         // Atributos finais estáticos da classe
         final private static $nomeTabela = "Usuario";
         final private static $nomesColunasTabela = [
@@ -141,7 +146,7 @@
      * Implementação de IUsuarioDAO para MySQL
      * @implements IUsuarioDAO
      */
-    class UsuarioDAOMySQL implements IUsuarioDAO {
+    final class UsuarioDAOMySQL implements IUsuarioDAO {
         // Variáveis para evitar múltiplos acessos de métodos estáticos
         private $nomeTabela = UsuarioVO::getNomeTabela();
         private $nomesColunasTabela = UsuarioVO::getNomesColunasTabela();
@@ -197,8 +202,8 @@
         }
         public function insert(UsuarioVO $uVO): bool {
 
-            $query1 = "INSERT INTO $this->nomeTabela(";
-            $query2 = "VALUES (";
+            $query1 = "INSERT INTO $this->nomeTabela(" . $this->nomesColunasTabela[0];
+            $query2 = "VALUES (null, ";
 
             for ($i = 1; $i < $this->quantColunasTabela; $i++) { 
                 if($i < $this->quantColunasTabela - 1) {
@@ -212,22 +217,23 @@
             }
 
             $con = getConexaoBancoMySQL();
-            if(isset($con) && $con != false) {
+            if(!empty($con)) {
+
                 $query = "$query1 $query2";
                 $stmt = $con->prepare($query);
-                if(isset($stmt) && $stmt != false) {
-                    $dadosUsuario = [$uVO->getId(),
-                    $uVO->getIdImagem(),
-                    $uVO->getIdTipoUsuario(),
-                    $uVO->getLogin(),
-                    $uVO->getSenha(),
-                    $uVO->getNome(),
-                    $uVO->getEmail(),
-                    $uVO->getDataAniversario(),
-                    $uVO->getDescricao(),
-                    $uVO->getDataCriacao(),
-                    intval($uVO->isAtivo())
-                ];
+                if(!empty($stmt)) {
+                    $dadosUsuario = [
+                        $uVO->getIdImagem(),
+                        $uVO->getIdTipoUsuario(),
+                        $uVO->getLogin(),
+                        $uVO->getSenha(),
+                        $uVO->getNome(),
+                        $uVO->getEmail(),
+                        $uVO->getDataAniversario(),
+                        $uVO->getDescricao(),
+                        $uVO->getDataCriacao(),
+                        intval($uVO->isAtivo())
+                    ];
     
                 $stmt->bind_param("iisssssssi",
                     $dadosUsuario[1],
@@ -406,23 +412,36 @@
 
                 $stmt = $con->prepare($query);
                 if(!empty($stmt)) {
-                    $quantAtributosFiltro = count($arrayAtributosFiltro);
-                    switch($quantAtributosFiltro){
+                    switch(count($arrayAtributosFiltro)){
                         case 1:
+                            $stmt->bind_param($tiposAtributos,
+                            $arrayAtributosFiltro[0]
+                            );
 
-    
                             break;
                         case 2:
-
+                            $stmt->bind_param($tiposAtributos,
+                            $arrayAtributosFiltro[0],
+                            $arrayAtributosFiltro[1]
+                            );
                                 
                             break;
                         case 3:
-
+                            $stmt->bind_param($tiposAtributos,
+                            $arrayAtributosFiltro[0],
+                            $arrayAtributosFiltro[1],
+                            $arrayAtributosFiltro[2]
+                            );
                                 
                             break;
                         case 4:
-
-
+                            $stmt->bind_param($tiposAtributos,
+                            $arrayAtributosFiltro[0],
+                            $arrayAtributosFiltro[1],
+                            $arrayAtributosFiltro[2],
+                            $arrayAtributosFiltro[3]
+                            );
+                                
                             break;
                         case 5:
                             $stmt->bind_param($tiposAtributos,
@@ -430,10 +449,8 @@
                             $arrayAtributosFiltro[1],
                             $arrayAtributosFiltro[2],
                             $arrayAtributosFiltro[3],
-                            $arrayAtributosFiltro[4],
-                            $arrayAtributosFiltro[5],
-                            $arrayAtributosFiltro[6]
-                        );
+                            $arrayAtributosFiltro[4]
+                            );
                                 
                             break;
                         case 6:
@@ -443,9 +460,8 @@
                             $arrayAtributosFiltro[2],
                             $arrayAtributosFiltro[3],
                             $arrayAtributosFiltro[4],
-                            $arrayAtributosFiltro[5],
-                            $arrayAtributosFiltro[6]
-                        );
+                            $arrayAtributosFiltro[5]
+                            );
                                 
                             break;
                         case 7:
@@ -456,9 +472,8 @@
                             $arrayAtributosFiltro[3],
                             $arrayAtributosFiltro[4],
                             $arrayAtributosFiltro[5],
-                            $arrayAtributosFiltro[6],
-                            $arrayAtributosFiltro[7]
-                        );
+                            $arrayAtributosFiltro[6]
+                            );
                                 
                             break;
                         case 8:
@@ -470,12 +485,25 @@
                             $arrayAtributosFiltro[4],
                             $arrayAtributosFiltro[5],
                             $arrayAtributosFiltro[6],
-                            $arrayAtributosFiltro[7],
-                            $arrayAtributosFiltro[8]
-                        );
+                            $arrayAtributosFiltro[7]
+                            );
                                 
                             break;
                         case 9:
+                            $stmt->bind_param($tiposAtributos,
+                                $arrayAtributosFiltro[0],
+                                $arrayAtributosFiltro[1],
+                                $arrayAtributosFiltro[2],
+                                $arrayAtributosFiltro[3],
+                                $arrayAtributosFiltro[4],
+                                $arrayAtributosFiltro[5],
+                                $arrayAtributosFiltro[6],
+                                $arrayAtributosFiltro[7],
+                                $arrayAtributosFiltro[8]
+                            );
+                                
+                            break;
+                        case 10:
                             $stmt->bind_param($tiposAtributos,
                                 $arrayAtributosFiltro[0],
                                 $arrayAtributosFiltro[1],
@@ -490,7 +518,7 @@
                             );
                                 
                             break;
-                        case 10:
+                        case 11:
                             $stmt->bind_param($tiposAtributos,
                                 $arrayAtributosFiltro[0],
                                 $arrayAtributosFiltro[1],
@@ -506,8 +534,6 @@
                             );
                                 
                             break;
-                        case 11:
-
                     }
 
                     $rs = $stmt->get_result();
@@ -549,10 +575,77 @@
                 exit("Erro ao definir Connection em UsuarioDAOMySQL->selectWhere(...): " . mysqli_connect_error());
         }
         public function update(UsuarioVO $uVO): bool {
+            $query = "UPDATE $this->nomeTabela SET ";
 
+            for ($i = 1; $i < $this->quantColunasTabela; $i++) { 
+                if($i < $this->quantColunasTabela - 1) {
+                    $query .= $this->nomesColunasTabela[$i] . " = ?, ";
+                }
+                else {
+                    $query .= $this->nomesColunasTabela[$i] . " = ? ";
+                }
+            }
+
+            $query .= "WHERE " . $this->nomesColunasTabela[0] . " = ?";
+
+            $con = getConexaoBancoMySQL();
+            if(!empty($con)) {
+                
+                $stmt = $con->prepare($query);
+                if(!empty($stmt)) {
+                    $dadosUsuario = [
+                        $uVO->getIdImagem(),
+                        $uVO->getIdTipoUsuario(),
+                        $uVO->getLogin(),
+                        $uVO->getSenha(),
+                        $uVO->getNome(),
+                        $uVO->getEmail(),
+                        $uVO->getDataAniversario(),
+                        $uVO->getDescricao(),
+                        $uVO->getDataCriacao(),
+                        intval($uVO->isAtivo()),
+                        $uVO->getId()
+                    ];
+    
+                $stmt->bind_param("isssssssii",
+                    $dadosUsuario[0],
+                    $dadosUsuario[1],
+                    $dadosUsuario[2],
+                    $dadosUsuario[3],
+                    $dadosUsuario[4],
+                    $dadosUsuario[5],
+                    $dadosUsuario[6],
+                    $dadosUsuario[7],
+                    $dadosUsuario[8],
+                    $dadosUsuario[9],
+                    $dadosUsuario[10]
+                );
+                return $stmt->execute();
+                
+                }
+                else
+                    exit("Erro ao definir PreparedStatement em UsuarioDAOMySQL->update(...): " . mysqli_connect_error());
+            }
+            else
+                exit("Erro ao definir Connection em UsuarioDAOMySQL->update(...): " . mysqli_connect_error());
         }
         public function delete(int $id): bool {
+            $idUsuario = $id;
+            $query = "DELETE FROM $this->nomeTabela WHERE " . $this->nomesColunasTabela[0] . " = ?";
 
+            $con = getConexaoBancoMySQL();
+            if(!empty($con)) {
+                
+                $stmt = $con->prepare($query);
+                if(!empty($stmt)) {
+                    $stmt->bind_param("i", $idUsuario);
+                    return $stmt->execute();
+                }
+                else
+                    exit("Erro ao definir PreparedStatement em UsuarioDAOMySQL->delete(...): " . mysqli_connect_error());
+            }
+            else
+                exit("Erro ao definir Connection em UsuarioDAOMySQL->delete(...): " . mysqli_connect_error());
         }
     }
 
