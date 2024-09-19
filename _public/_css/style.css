@@ -278,6 +278,24 @@ main section h2 {
     margin-bottom: 1rem;
 }
 
+.form-container .botao-sessao {
+    width: 100%;
+    border-radius: 4%;
+    margin-left: 0.5rem;
+    margin-top: 0.3rem;
+}
+
+.form-container a {
+    font-size: 0.8em;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    margin-left: 0.4rem;
+}
+
+main h3 {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 1.2em;
+}
+
 main section p, main section li {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     text-align: justify;
@@ -296,6 +314,10 @@ input {
     margin: 0.2rem;
     width: 100%;
     margin-bottom: 0.5rem;
+}
+
+h3 a {
+    color: rgb(45, 54, 40);
 }
 
 /* Footer */
@@ -398,6 +420,3 @@ footer p {
         margin-left: auto; /* Move os botões para o lado direito */
     }
 }
-
-
-/* PARA FAZER: Depois, adicionar ao menu e à div do carrossel de imagens */
