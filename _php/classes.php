@@ -1,9 +1,4 @@
 <?php
-    include('phpToMail-master/PHPMailerAutoload.php'); 
-    include("./phpToMail/class.phpmailer.php"); 
-    include("./phpToMail/class.smtp.php");
-    include('recebe.php');
-
     /**
      * Um objeto que contém os dados necessários para todas as tabelas no banco de dados
      * Estes dados são:
