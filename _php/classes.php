@@ -47,8 +47,8 @@
      */
     final class UsuarioVO extends ObjetoVO {
         // Atributos finais estáticos da classe
-        final private static $nomeTabela = "Usuario";
-        final private static $nomesColunasTabela = [
+        private static $nomeTabela = "Usuario";
+        private static $nomesColunasTabela = [
             "idUsuario",
 
             "idImagemUsuario",
