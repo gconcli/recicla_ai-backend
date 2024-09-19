@@ -143,9 +143,15 @@
      */
     final class UsuarioDAOMySQL implements IUsuarioDAO {
         // Variáveis para evitar múltiplos acessos de métodos estáticos
-        private $nomeTabela = UsuarioVO::getNomeTabela();
-        private $nomesColunasTabela = UsuarioVO::getNomesColunasTabela();
-        private $quantColunasTabela = count($nomesColunasTabela);
+        private $nomeTabela;
+        private $nomesColunasTabela;
+        private $quantColunasTabela;
+
+        public function __construct() {
+            $this->nomeTabela = UsuarioVO::getNomeTabela();
+            $this->nomesColunasTabela = UsuarioVO::getNomesColunasTabela();
+            $this->quantColunasTabela = count($this->nomesColunasTabela);
+        }
 
         public function login(string $login, string $senha) : UsuarioVO | bool | null {
             $query = "SELECT * FROM $this->nomeTabela WHERE " . $this->nomesColunasTabela[3] . " = ?";
