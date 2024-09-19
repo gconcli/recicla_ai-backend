@@ -348,7 +348,13 @@ footer p {
 }
 
 /* Media Queries */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
+    .container-cards {
+      grid-template-columns: 1fr; /* Para que, em telas menores, só apareça um card por vez na página Sobre Nós */
+    }
+}
+
+@media (max-width: 1000px) {
     #menu-hamburguer {
         display: block;
         font-size: 2rem;
