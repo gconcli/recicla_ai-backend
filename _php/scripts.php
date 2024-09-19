@@ -1,4 +1,5 @@
 <?php
+
     /**
      * Cria e retorna uma conexão com o banco de dados MySQL especificado na função
      * @return mysqli - O objeto "mysqli" da conexão
