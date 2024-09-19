@@ -1,6 +1,6 @@
 <?php
     /**
-     * Interface de modelo DAO para dados do Usuário
+     * Interface de modelo DAO para dados da tabela 'Usuario'
      */
     interface IUsuarioDAO {
         /**
