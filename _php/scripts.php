@@ -18,4 +18,11 @@
         echo "Sucesso na conexão com o banco de dados";
         return $con;
     }
+
+    function recebe() {
+        $nome = $_POST['nome'];
+        $email = $_POST['email'];
+        $usuario = $_POST['usuario'];
+        $senha = MD5($_POST['senha']);
+    }
 ?>
