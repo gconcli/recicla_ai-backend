@@ -1,5 +1,6 @@
 <?php
-    include('../_php/dados_sessao.php')
+    include('../_php/dados_sessao.php');
+    include('../_php/editar_cadastro.php');
 ?>
 
 <!DOCTYPE html>
@@ -65,7 +66,7 @@
             <h3 style="text-align: center">Editar cadastro do usuário</h3>
 
             <div class="form-container" style="justify-content: center;">
-                <form name="cadastro" action="" method="post"> <!-- TODO: Depois configurar o back-end -->
+                <form name="cadastro" action="../_php/editar_cadastro.php" method="post"> <!-- TODO: Depois configurar o back-end -->
                     <label for="nome">Nome completo:</label>
                     <!-- htmlspecialchars para campos já estarem preenchidos com os dados da seção do usuário (exceto senha): -->
                     <input type="text" id="nome" name="nome" placeholder="José da Silva" value="<?php echo htmlspecialchars($nomeCompleto); ?>" required>
@@ -76,8 +77,8 @@
                     <label for="senha">Senha:</label>
                     <input type="password" id="senha" name="senha" placeholder="Digite sua senha" required>
                     <br>
-                    <button type="submit" class="botao-sessao">Atualizar</button>
-                    <button type="submit" class="botao-sessao">Excluir</button>
+                    <button type="submit" name="atualizar" class="botao-sessao">Atualizar</button> <!-- Name nos botões para chamá-los na lógica do PHP -->
+                    <button type="submit" name="excluir" class="botao-sessao">Excluir</button>
                 </form>
             </div>
         </section>
