@@ -1,4 +1,7 @@
 <?php
+    require_once 'scripts.php';
+    require_once 'interfaces.php';
+
     /**
      * Um objeto que contém os dados necessários para todas as tabelas no banco de dados
      * Estes dados são:
@@ -154,23 +157,23 @@
             $this->quantColunasTabela = count($this->nomesColunasTabela);
         }
 
-        private function criarArrayDados() {
+        private function criarArrayDados(UsuarioVO &$usuario) : array {
             return [
-                $uVO->getId(),
-                $uVO->getIdImagem(),
-                $uVO->getIdTipoUsuario(),
-                $uVO->getLogin(),
-                $uVO->getSenha(),
-                $uVO->getNome(),
-                $uVO->getEmail(),
-                $uVO->getDataAniversario(),
-                $uVO->getDescricao(),
-                $uVO->getDataCriacao(),
-                intval($uVO->isAtivo())
+                $usuario->getId(),
+                $usuario->getIdImagem(),
+                $usuario->getIdTipoUsuario(),
+                $usuario->getLogin(),
+                $usuario->getSenha(),
+                $usuario->getNome(),
+                $usuario->getEmail(),
+                $usuario->getDataAniversario(),
+                $usuario->getDescricao(),
+                $usuario->getDataCriacao(),
+                intval($usuario->isAtivo())
             ];
         }
 
-        private function preencherUsuarioSaida(&$linha) {
+        private function preencherUsuarioSaida(array &$linha) : UsuarioVO {
             $uVOs = new UsuarioVO();
             $uVOs->setId($linha[$this->nomesColunasTabela[0]]);
             $uVOs->setIdImagem($linha[$this->nomesColunasTabela[1]]);
@@ -187,39 +190,66 @@
             return $uVOs;
         }
 
+        private function encerrarConexoesSemRS(mysqli &$connectionS, mysqli_stmt &$preparedStatementS) : void {
+            $preparedStatementS->close();
+            $connectionS->close();
+        }
+
+        private function encerrarConexoesComRS(mysqli &$connectionC, mysqli_stmt &$preparedStatementC, mysqli_result &$resultSet) : void {
+            $resultSet->close();
+            $preparedStatementC->close();
+            $connectionC->close();
+        }
+
         public function login(string $login, string $senha) : UsuarioVO | bool | null {
             $query = "SELECT * FROM $this->nomeTabela WHERE " . $this->nomesColunasTabela[3] . " = ?";
 
             $con = getConexaoBancoMySQL();
-            if(isset($con) && $con != false) {
+            if(!empty($con)) {
 
                 $stmt = $con->prepare($query);
-                if(isset($stmt) && $stmt != false) {
+                if(!empty($stmt)) {
 
                     $stmt->bind_param("s", $login);
                     $rs = $stmt->get_result();
-                    if(isset($rs) && $rs != false) {
+                    if(!empty($rs)) {
 
                         $linha = $rs->fetch_assoc();
-                        if(isset($linha) && $linha != false) {
+                        if(!empty($linha)) {
 
                             $hash = $linha[$this->nomesColunasTabela[4]];
-                            if(password_verify($senha, $hash))          
+                            if(password_verify($senha, $hash)) {
+                                encerrarConexoesComRetorno($con, $stmt, $rs);
                                 return preencherUsuarioSaida($linha);
-                            else
+                            }
+                            else {
+                                encerrarConexoesComRS($con, $stmt, $rs);
                                 return false;
+                            }
                         }
-                        else
+                        else {
+                            encerrarConexoesComRS($con, $stmt, $rs);
                             return null;
+                        }
                     }
-                    else
-                        exit("Erro ao definir ResultSet em UsuarioDAOMySQL->login(...): " . mysqli_connect_error());
+                    else {
+                        $erro = mysqli_connect_error();
+                        encerrarConexoesSemRS($con, $stmt);
+                        exit("\nErro ao definir ResultSet em UsuarioDAOMySQL->login(): $erro");
+                    }
                 }
-                else
-                    exit("Erro ao definir PreparedStatement em UsuarioDAOMySQL->login(...): " . mysqli_connect_error());
+                else {
+                    $erro = mysqli_connect_error();
+                    encerrarConexoesSemRS($con, $stmt);
+                    exit("\nErro ao definir PreparedStatement em UsuarioDAOMySQL->login(): $erro");
+                }
             }
-            else
-                exit("Erro ao definir Connection em UsuarioDAOMySQL->login(...): " . mysqli_connect_error());
+            else {
+                $erro = mysqli_connect_error();
+                encerrarConexoesSemRS($con, $stmt);
+                exit("\nErro ao definir Connection em UsuarioDAOMySQL->login(): $erro");
+            }
+                
         }
         public function insert(UsuarioVO $uVO) : bool {
 
@@ -243,7 +273,7 @@
                 $query = "$query1 $query2";
                 $stmt = $con->prepare($query);
                 if(!empty($stmt)) {
-                    $dadosUsuario = criarArrayDados();
+                    $dadosUsuario = criarArrayDados($uVO);
     
                     $stmt->bind_param("iisssssssi",
                         $dadosUsuario[1],
@@ -257,17 +287,31 @@
                         $dadosUsuario[9],
                         $dadosUsuario[10]
                     );
-                return $stmt->execute();
+
+                    if($stmt->execute()) {
+                        encerrarConexoesSemRS($con, $stmt);
+                        return true;
+                    }
+                    else {
+                        encerrarConexoesSemRS($con, $stmt);
+                        return false;
+                    }
                 
                 }
-                else
-                    exit("Erro ao definir PreparedStatement em UsuarioDAOMySQL->insert(...): " . mysqli_connect_error());
+                else {
+                    $erro = mysqli_connect_error();
+                    encerrarConexoesSemRS($con, $stmt);
+                    exit("\nErro ao definir PreparedStatement em UsuarioDAOMySQL->insert(): $erro");
+                }
+                    
             }
-            else
-                exit("Erro ao definir Connection em UsuarioDAOMySQL->insert(...): " . mysqli_connect_error());
-            
-            
+            else {
+                $erro = mysqli_connect_error();
+                encerrarConexoesSemRS($con, $stmt);
+                exit("\nErro ao definir Connection em UsuarioDAOMySQL->insert(): $erro");
+            }
         }
+
         public function selectAll() : ?array {
             $query = "SELECT * FROM $this->nomeTabela";
 
@@ -276,30 +320,37 @@
 
                 $stmt = $con->prepare($query);
                 if(!empty($stmt)) {
+
                     $rs = $stmt->get_result();
-                    if(isset($rs) && $rs != false) {
+                    if(!empty($rs)) {
 
                         $linha = $rs->fetch_assoc();
-                        if($linha != false) {
-
-                            $arrayRetorno = [];
-                            while(isset($linha)) {
-                                $arrayRetorno[] = preencherUsuarioSaida($linha);
-                            }
-
-                            return (count($arrayRetorno) == 0) ? null : $arrayRetorno;
+                        $arrayRetorno = [];
+                        while(!empty($linha)) {
+                            $arrayRetorno[] = preencherUsuarioSaida($linha);
+                            $linha = $rs->fetch_assoc();
                         }
-                        else
-                            return null;
+                        encerrarConexoesComRS($con, $stmt, $rs);
+                        return (count($arrayRetorno) == 0) ? null : $arrayRetorno;
                     }
-                    else
-                        exit("Erro ao definir ResultSet em UsuarioDAOMySQL->selectAll(...): " . mysqli_connect_error());
+                    else {
+                        $erro = mysqli_connect_error();
+                        encerrarConexoesComRS($con, $stmt, $rs);
+                        exit("\nErro ao definir ResultSet em UsuarioDAOMySQL->selectAll(): $erro");
+                    }
                 }
-                else
-                    exit("Erro ao definir PreparedStatement em UsuarioDAOMySQL->selectAll(...): " . mysqli_connect_error());
+                else {
+                    $erro = mysqli_connect_error();
+                    encerrarConexoesSemRS($con, $stmt);
+                    exit("\nErro ao definir PreparedStatement em UsuarioDAOMySQL->selectAll(): $erro");
+                }
+                    
             }
-            else
-                exit("Erro ao definir Connection em UsuarioDAOMySQL->selectAll(...): " . mysqli_connect_error());
+            else {
+                $erro = mysqli_connect_error();
+                encerrarConexoesSemRS($con, $stmt);
+                exit("\nErro ao definir Connection em UsuarioDAOMySQL->selectAll(): $erro");
+            }
         }
         public function selectWhere(UsuarioVO $uVO) : ?array {
             $query = "SELECT * FROM $this->nomeTabela WHERE ";
@@ -411,6 +462,8 @@
 
                 $stmt = $con->prepare($query);
                 if(!empty($stmt)) {
+                    # Código com valores fixos, se modificar a tabela deve-se modificar esse switch
+                    # Procurar alternativa mais modular
                     switch(count($arrayAtributosFiltro)){
                         case 1:
                             $stmt->bind_param($tiposAtributos,
@@ -536,29 +589,37 @@
                     }
 
                     $rs = $stmt->get_result();
-                    if(isset($rs) && $rs != false) {
+                    if(!empty($rs)) {
 
                         $linha = $rs->fetch_assoc();
-                        if($linha != false) {
-
-                            $arrayRetorno = [];
-                            while(isset($linha)) {
-                                $arrayRetorno[] = preencherUsuarioSaida($linha);
-                            }
-
-                            return (count($arrayRetorno) == 0) ? null : $arrayRetorno;
+                        $arrayRetorno = [];
+                        while(!empty($linha)) {
+                            $arrayRetorno[] = preencherUsuarioSaida($linha);
+                            $linha = $rs->fetch_assoc();
                         }
-                        else
-                            return null;
+                        encerrarConexoesComRS($con, $stmt, $rs);
+                        return (count($arrayRetorno) == 0) ? null : $arrayRetorno;
                     }
-                    else
-                        exit("Erro ao definir ResultSet em UsuarioDAOMySQL->selectWhere(...): " . mysqli_connect_error());
+                    else {
+                        $erro = mysqli_connect_error();
+                        encerrarConexoesComRS($con, $stmt, $rs);
+                        exit("\nErro ao definir ResultSet em UsuarioDAOMySQL->selectWhere(): $erro");
+                    }
+                        
                 }
-                else
-                    exit("Erro ao definir PreparedStatement em UsuarioDAOMySQL->selectWhere(...): " . mysqli_connect_error());
+                else {
+                    $erro = mysqli_connect_error();
+                    encerrarConexoesSemRS($con, $stmt);
+                    exit("\nErro ao definir PreparedStatement em UsuarioDAOMySQL->selectWhere(): $erro");
+                }
+                    
             }
-            else
-                exit("Erro ao definir Connection em UsuarioDAOMySQL->selectWhere(...): " . mysqli_connect_error());
+            else {
+                $erro = mysqli_connect_error();
+                encerrarConexoesSemRS($con, $stmt);
+                exit("\nErro ao definir Connection em UsuarioDAOMySQL->selectWhere(): $erro");
+            }
+                
         }
         public function update(UsuarioVO $uVO) : bool {
             $query = "UPDATE $this->nomeTabela SET ";
@@ -579,7 +640,7 @@
                 
                 $stmt = $con->prepare($query);
                 if(!empty($stmt)) {
-                    $dadosUsuario = criarArrayDados();
+                    $dadosUsuario = criarArrayDados($uVO);
     
                 $stmt->bind_param("iisssssssii",
                     $dadosUsuario[0],
@@ -594,14 +655,28 @@
                     $dadosUsuario[9],
                     $dadosUsuario[10]
                 );
-                return $stmt->execute();
+                
+                if($stmt->execute()) {
+                    encerrarConexoesSemRS($con, $stmt);
+                    return true;
+                }
+                else {
+                    encerrarConexoesSemRS($con, $stmt);
+                    return false;
+                }
                 
                 }
-                else
-                    exit("Erro ao definir PreparedStatement em UsuarioDAOMySQL->update(...): " . mysqli_connect_error());
+                else {
+                    $erro = mysqli_connect_error();
+                    encerrarConexoesSemRS($con, $stmt);
+                    exit("\nErro ao definir PreparedStatement em UsuarioDAOMySQL->update(): $erro");
+                }
             }
-            else
-                exit("Erro ao definir Connection em UsuarioDAOMySQL->update(...): " . mysqli_connect_error());
+            else {
+                $erro = mysqli_connect_error();
+                encerrarConexoesSemRS($con, $stmt);
+                exit("\nErro ao definir Connection em UsuarioDAOMySQL->update(): $erro");
+            }
         }
         public function delete(int $id) : bool {
             $idUsuario = $id;
@@ -613,13 +688,27 @@
                 $stmt = $con->prepare($query);
                 if(!empty($stmt)) {
                     $stmt->bind_param("i", $idUsuario);
-                    return $stmt->execute();
+
+                    if($stmt->execute()) {
+                        encerrarConexoesSemRS($con, $stmt);
+                        return true;
+                    }
+                    else {
+                        encerrarConexoesSemRS($con, $stmt);
+                        return false;
+                    }
                 }
-                else
-                    exit("Erro ao definir PreparedStatement em UsuarioDAOMySQL->delete(...): " . mysqli_connect_error());
+                else {
+                    $erro = mysqli_connect_error();
+                    encerrarConexoesSemRS($con, $stmt);
+                    exit("\nErro ao definir PreparedStatement em UsuarioDAOMySQL->delete(): $erro");
+                }
             }
-            else
-                exit("Erro ao definir Connection em UsuarioDAOMySQL->delete(...): " . mysqli_connect_error());
+            else {
+                $erro = mysqli_connect_error();
+                encerrarConexoesSemRS($con, $stmt);
+                exit("\nErro ao definir Connection em UsuarioDAOMySQL->delete(): $erro");
+            }
         }
     }
 
@@ -658,7 +747,7 @@
             self::$servicosUsuario = new ServicosUsuario();
         }
 
-        public static function getServicosUsuario() {return self::$servicosUsuario;}
+        public static function getServicosUsuario() : ServicosUsuario {return self::$servicosUsuario;}
     }
 
     // Exemplo de uso
