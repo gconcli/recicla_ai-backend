@@ -17,6 +17,7 @@
             exit("Falha na conexão: $con->connect_error");
         }
         //echo "Sucesso na conexão com o banco de dados";
+        // Removido para não aparecer na hora que vai para a página se sessão
         return $con;
     }
 ?>

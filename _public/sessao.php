@@ -67,11 +67,11 @@
             <div class="form-container" style="justify-content: center;">
                 <form name="cadastro" action="" method="post"> <!-- TODO: Depois configurar o back-end -->
                     <label for="nome">Nome completo:</label>
-                    <input type="text" id="nome" name="nome" placeholder="José da Silva" required>
-                    <!-- TODO: talvez definir textos e preencher os input utilizando READ e pegando dados de usuário ou só login já vale -->
+                    <!-- htmlspecialchars para campos já estarem preenchidos com os dados da seção do usuário (exceto senha): -->
+                    <input type="text" id="nome" name="nome" placeholder="José da Silva" value="<?php echo htmlspecialchars($nomeCompleto); ?>" required>
                     <br>
                     <label for="email">E-mail:</label>
-                    <input type="email" id="email" name="email" placeholder="exemplo@email.com" required>
+                    <input type="email" id="email" name="email" placeholder="exemplo@email.com" value="<?php echo htmlspecialchars($emailUsuario); ?>" required>
                     <br>
                     <label for="senha">Senha:</label>
                     <input type="password" id="senha" name="senha" placeholder="Digite sua senha" required>
