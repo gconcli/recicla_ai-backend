@@ -151,12 +151,17 @@
         private $nomesColunasTabela;
         private $quantColunasTabela;
 
+        // Construtor
         public function __construct() {
             $this->nomeTabela = UsuarioVO::getNomeTabela();
             $this->nomesColunasTabela = UsuarioVO::getNomesColunasTabela();
             $this->quantColunasTabela = count($this->nomesColunasTabela);
         }
 
+        /**
+         * Função privada para criar um array com todos os dados de um usuário
+         * @param UsuarioVO &$usuario - Referência ao usuario que contém os dados
+         */
         private function criarArrayDados(UsuarioVO &$usuario) : array {
             return [
                 $usuario->getId(),
@@ -173,28 +178,43 @@
             ];
         }
 
-        private function preencherUsuarioSaida(array &$linha) : UsuarioVO {
+        /**
+         * Função privada que cria, preenche e retorna um usuário a partir de um array equivalente a uma linha no banco de dados
+         * @param array &$dados - Referência a linha de um ResultSet com os dados
+         */
+        private function preencherUsuarioSaida(array &$dados) : UsuarioVO {
             $uVOs = new UsuarioVO();
-            $uVOs->setId($linha[$this->nomesColunasTabela[0]]);
-            $uVOs->setIdImagem($linha[$this->nomesColunasTabela[1]]);
-            $uVOs->setIdTipoUsuario($linha[$this->nomesColunasTabela[2]]);
-            $uVOs->setLogin($linha[$this->nomesColunasTabela[3]]);
+            $uVOs->setId($dados[$this->nomesColunasTabela[0]]);
+            $uVOs->setIdImagem($dados[$this->nomesColunasTabela[1]]);
+            $uVOs->setIdTipoUsuario($dados[$this->nomesColunasTabela[2]]);
+            $uVOs->setLogin($dados[$this->nomesColunasTabela[3]]);
             $uVOs->setSenha($hash);
-            $uVOs->setNome($linha[$this->nomesColunasTabela[5]]);
-            $uVOs->setEmail($linha[$this->nomesColunasTabela[6]]);
-            $uVOs->setDataAniversario($linha[$this->nomesColunasTabela[7]]);
-            $uVOs->setDescricao($linha[$this->nomesColunasTabela[8]]);
-            $uVOs->setDataCriacao($linha[$this->nomesColunasTabela[9]]);
-            $uVOs->setAtivo(boolval($linha[$this->nomesColunasTabela[10]]));
+            $uVOs->setNome($dados[$this->nomesColunasTabela[5]]);
+            $uVOs->setEmail($dados[$this->nomesColunasTabela[6]]);
+            $uVOs->setDataAniversario($dados[$this->nomesColunasTabela[7]]);
+            $uVOs->setDescricao($dados[$this->nomesColunasTabela[8]]);
+            $uVOs->setDataCriacao($dados[$this->nomesColunasTabela[9]]);
+            $uVOs->setAtivo(boolval($dados[$this->nomesColunasTabela[10]]));
 
             return $uVOs;
         }
 
+        /**
+         * Função privada que fecha a conexao com o banco de dados, quando não houver um ResultSet
+         * @param mysqli &$connectionS - Referência a conexão aberta com o banco
+         * @param mysqli_stmt &$preparedStatementS - Referência ao PreparedStatement utilizado na função
+         */
         private function encerrarConexoesSemRS(mysqli &$connectionS, mysqli_stmt &$preparedStatementS) : void {
             $preparedStatementS->close();
             $connectionS->close();
         }
 
+        /**
+         * Função privada que fecha a conexao com o banco de dados, quando houver um ResultSet
+         * @param mysqli &$connectionS - Referência a conexão aberta com o banco
+         * @param mysqli_stmt &$preparedStatementS - Referência ao PreparedStatement utilizado na função
+         * @param mysqli_result &$resultSet - Referência ao ResultSet utilizado na função
+         */
         private function encerrarConexoesComRS(mysqli &$connectionC, mysqli_stmt &$preparedStatementC, mysqli_result &$resultSet) : void {
             $resultSet->close();
             $preparedStatementC->close();
@@ -202,60 +222,84 @@
         }
 
         public function login(string $login, string $senha) : UsuarioVO | bool | null {
+            // Inicializa uma Query já pronta para a conexão
             $query = "SELECT * FROM $this->nomeTabela WHERE " . $this->nomesColunasTabela[3] . " = ?";
 
+            // Chama a função que cria uma conexão com o banco de dados
             $con = getConexaoBancoMySQL();
+
             if(!empty($con)) {
 
+                // Cria um PreparedStatement com a query
                 $stmt = $con->prepare($query);
+
                 if(!empty($stmt)) {
 
+                    // Coloca 'login' no PreparedStatement e tenta executar e receber o resultado em um ResultSet
                     $stmt->bind_param("s", $login);
                     $rs = $stmt->get_result();
+
                     if(!empty($rs)) {
 
+                        // Lê a linha no ResultSet para a comparação de senhas
                         $linha = $rs->fetch_assoc();
                         if(!empty($linha)) {
 
+                            // Recebe o hash no banco de dados e o compara com a senha digitada no site
                             $hash = $linha[$this->nomesColunasTabela[4]];
+
                             if(password_verify($senha, $hash)) {
+
+                                // Encerra as conexões e retorna o usuário se as senhas forem iguais
                                 encerrarConexoesComRetorno($con, $stmt, $rs);
                                 return preencherUsuarioSaida($linha);
                             }
                             else {
+
+                                // Encerra as conexões e retorna 'false' se as senhas forem diferentes
                                 encerrarConexoesComRS($con, $stmt, $rs);
                                 return false;
                             }
                         }
                         else {
+
+                            // Encerra as conexões e retorna nulo se o ResultSet não possuir nenhum usuário correspondente ao login digitado
                             encerrarConexoesComRS($con, $stmt, $rs);
                             return null;
                         }
                     }
                     else {
+
+                        // Encerra as conexões e envia uma mensagem se ocorrer algum erro na criação do ResultSet
                         $erro = mysqli_connect_error();
                         encerrarConexoesSemRS($con, $stmt);
                         exit("\nErro ao definir ResultSet em UsuarioDAOMySQL->login(): $erro");
                     }
                 }
                 else {
+
+                    // Encerra as conexões e envia uma mensagem se ocorrer algum erro na criação do PreparedStatement
                     $erro = mysqli_connect_error();
                     encerrarConexoesSemRS($con, $stmt);
                     exit("\nErro ao definir PreparedStatement em UsuarioDAOMySQL->login(): $erro");
                 }
             }
             else {
+
+                // Encerra as conexões e envia uma mensagem se ocorrer algum erro na criação da conexão
                 $erro = mysqli_connect_error();
                 encerrarConexoesSemRS($con, $stmt);
                 exit("\nErro ao definir Connection em UsuarioDAOMySQL->login(): $erro");
             }
                 
         }
-        public function insert(UsuarioVO $uVO) : bool {
 
+        public function insert(UsuarioVO $uVO) : bool {
+            // Inicializa a query em duas partes: Uma para os nomes das colunas na tabela e a outra contendo os valores para registro
             $query1 = "INSERT INTO $this->nomeTabela(" . $this->nomesColunasTabela[0];
             $query2 = "VALUES (null, ";
 
+            // Preenche cada query conforme o número de colunas
             for ($i = 1; $i < $this->quantColunasTabela; $i++) { 
                 if($i < $this->quantColunasTabela - 1) {
                     $query1 .= $this->nomesColunasTabela[$i] . ", ";
@@ -267,14 +311,20 @@
                 }
             }
 
+            // Chama a função que cria uma conexão com o banco de dados
             $con = getConexaoBancoMySQL();
+
             if(!empty($con)) {
 
+                // Junta as queries em uma, e cria um PreparedStatement com esta nova query única
                 $query = "$query1 $query2";
                 $stmt = $con->prepare($query);
+
                 if(!empty($stmt)) {
+                    // Cria um array com todos os dados informados no usuário
                     $dadosUsuario = criarArrayDados($uVO);
     
+                    // Dá "bind" destes dados no PreparedStatement
                     $stmt->bind_param("iisssssssi",
                         $dadosUsuario[1],
                         $dadosUsuario[2],
@@ -289,16 +339,19 @@
                     );
 
                     if($stmt->execute()) {
+                        // Se o código executar sem erro, encerra as conexões e retorna 'true'
                         encerrarConexoesSemRS($con, $stmt);
                         return true;
                     }
                     else {
+                        // Se o código executar com erro ou não executar, encerra as conexões e retorna 'false'
                         encerrarConexoesSemRS($con, $stmt);
                         return false;
                     }
                 
                 }
                 else {
+                    // Encerra as conexões e envia uma mensagem se ocorrer algum erro na criação do PreparedStatement
                     $erro = mysqli_connect_error();
                     encerrarConexoesSemRS($con, $stmt);
                     exit("\nErro ao definir PreparedStatement em UsuarioDAOMySQL->insert(): $erro");
@@ -306,6 +359,7 @@
                     
             }
             else {
+                // Encerra as conexões e envia uma mensagem se ocorrer algum erro na criação da conexão
                 $erro = mysqli_connect_error();
                 encerrarConexoesSemRS($con, $stmt);
                 exit("\nErro ao definir Connection em UsuarioDAOMySQL->insert(): $erro");
@@ -313,33 +367,52 @@
         }
 
         public function selectAll() : ?array {
+            // Inicializa uma Query já pronta para a conexão
             $query = "SELECT * FROM $this->nomeTabela";
 
+            // Chama a função que cria uma conexão com o banco de dados
             $con = getConexaoBancoMySQL();
+
             if(!empty($con)) {
 
+                // Cria um PreparedStatement com a query
                 $stmt = $con->prepare($query);
+
                 if(!empty($stmt)) {
 
+                    // Tenta executar e receber o resultado em um ResultSet
                     $rs = $stmt->get_result();
+
                     if(!empty($rs)) {
 
+                        // Recebe a primeira linha da tabela e cria um array para retorno
                         $linha = $rs->fetch_assoc();
                         $arrayRetorno = [];
+
                         while(!empty($linha)) {
+
+                            // Enquanto houverem linhas na tabela, salva os dados em um usuário e o adiciona no array de retorno
                             $arrayRetorno[] = preencherUsuarioSaida($linha);
+
+                            // Avança para a próxima linha no ResultSet
                             $linha = $rs->fetch_assoc();
                         }
+
+                        // Encerra as conexões e verifica se o array contém algum usuário. Se não conter retorna 'null', senão retorna o array.
                         encerrarConexoesComRS($con, $stmt, $rs);
                         return (count($arrayRetorno) == 0) ? null : $arrayRetorno;
                     }
                     else {
+
+                        // Encerra as conexões e envia uma mensagem se ocorrer algum erro na criação do ResultSet
                         $erro = mysqli_connect_error();
                         encerrarConexoesComRS($con, $stmt, $rs);
                         exit("\nErro ao definir ResultSet em UsuarioDAOMySQL->selectAll(): $erro");
                     }
                 }
                 else {
+
+                    // Encerra as conexões e envia uma mensagem se ocorrer algum erro na criação do PreparedStatement
                     $erro = mysqli_connect_error();
                     encerrarConexoesSemRS($con, $stmt);
                     exit("\nErro ao definir PreparedStatement em UsuarioDAOMySQL->selectAll(): $erro");
@@ -347,121 +420,172 @@
                     
             }
             else {
+
+                // Encerra as conexões e envia uma mensagem se ocorrer algum erro na criação da conexão
                 $erro = mysqli_connect_error();
                 encerrarConexoesSemRS($con, $stmt);
                 exit("\nErro ao definir Connection em UsuarioDAOMySQL->selectAll(): $erro");
             }
         }
+
+        /**
+         * Função privada para adicionar texto na query de pesquisa
+         * @param string &$queryWhere - Referência a query
+         * @param bool &$flagAnd - Referência a uma flag
+         * @param int $indice - Indice do nome da coluna
+         */
+        private function addQueryWhere(string &$queryWhere, bool &$flagAnd, int $indice) : void {
+            if($flagAnd)
+            $queryWhere .= " AND " . $this->nomesColunasTabela[$indice] . " = ?";
+             else {
+                $queryWhere .= $this->nomesColunasTabela[$indice] . " = ?";
+                $flagAnd = true;
+            }
+        }
+
         public function selectWhere(UsuarioVO $uVO) : ?array {
+            // Inicialização da query para pesquisa
             $query = "SELECT * FROM $this->nomeTabela WHERE ";
 
+            // String que irá guardar os tipos de dados para o PreparedStatement
             $tiposAtributos = "";
+
+            // Array que irá guardar os atributos do usuário para o PreparedStatement
             $arrayAtributosFiltro = [];
-            for ($i = 0; $i < $this->quantColunasTabela; $i++) { 
-                    # Código com valores fixos, se modificar a tabela deve-se modificar esse switch
-                    # Procurar alternativa mais modular
+
+            // Flag para preenchimento correto da query de pesquisa
+            $and = false;
+
+            for ($i = 0; $i < $this->quantColunasTabela; $i++) {
+
+                // Switch que, para cada indice, recebe um atributo do UsuarioVO. Se o atributo não for nulo, adiciona texto na query, adiciona o tipo de dado na string de tipos e adiciona o próprio atributo no array de atributos
+                # Código com valores fixos, se modificar a tabela deve-se modificar esse switch
+                # Procurar alternativa mais modular
                 switch($i) {
                     case 0:
+                        // ID
                         $id = $uVO->getId();
                         if(isset($id)) {
+                            addQueryWhere($query, $and);
                             $tiposAtributos .= "i";
                             $arrayAtributosFiltro[] = $id;
                         }
                             
                         break;
                     case 1:
+                        // ID de Imagem
                         $idImagem = $uVO->getIdImagem();
                         if(isset($idImagem)){
+                            addQueryWhere($query, $and, $i);
                             $tiposAtributos .= "i";
                             $arrayAtributosFiltro[] = $idImagem;
                         }
 
                         break;
                     case 2:
+                        // Id de Tipo
                         $idTipo = $uVO->getIdTipoUsuario();
                         if(isset($idTipo)){
+                            addQueryWhere($query, $and, $i);
                             $tiposAtributos .= "i";
                             $arrayAtributosFiltro[] = $idTipo;
                         }
                             
                         break;
                     case 3:
+                        // Login
                         $login = $uVO->getLogin();
                         if(isset($login)){
+                            addQueryWhere($query, $and, $i);
                             $tiposAtributos .= "s";
                             $arrayAtributosFiltro[] = $login;
                         }
                             
                         break;
                     case 4:
+                        // Senha
                         $senha = $uVO->getSenha();
                         if(isset($senha)){
+                            addQueryWhere($query, $and, $i);
                             $tiposAtributos .= "s";
                             $arrayAtributosFiltro[] = $senha;
                         }
                             
                         break;
                     case 5:
+                        // Nome
                         $nome = $uVO->getNome();
                         if(isset($nome)){
+                            addQueryWhere($query, $and, $i);
                             $tiposAtributos .= "s";
                             $arrayAtributosFiltro[] = $nome;
                         }
                             
                         break;
                     case 6:
+                        // Email
                         $email = $uVO->getEmail();
                         if(isset($email)){
+                            addQueryWhere($query, $and, $i);
                             $tiposAtributos .= "s";
                             $arrayAtributosFiltro[] = $email;
                         }
                             
                         break;
                     case 7:
+                        // Data de Aniversário
                         $dataAniversario = $uVO->getDataAniversario();
                         if(isset($dataAniversario)){
+                            addQueryWhere($query, $and, $i);
                             $tiposAtributos .= "s";
                             $arrayAtributosFiltro[] = $dataAniversario;
                         }
                             
                         break;
                     case 8:
+                        // Descrição
                         $descricao = $uVO->getDescricao();
                         if(isset($descricao)){
+                            addQueryWhere($query, $and, $i);
                             $tiposAtributos .= "s";
                             $arrayAtributosFiltro[] = $descricao;
                         }
                             
                         break;
                     case 9:
+                        // Data de Criação do Registro
                         $dataCriacao = $uVO->getDataCriacao();
                         if(isset($dataCriacao)){
+                            addQueryWhere($query, $and, $i);
                             $tiposAtributos .= "s";
                             $arrayAtributosFiltro[] = $dataCriacao;
                         }
                             
                         break;
                     case 10:
+                        // Flag de registro ativo
                         $ativo = intval($uVO->isAtivo());
                         if(isset($ativo)){
+                            addQueryWhere($query, $and, $i);
                             $tiposAtributos .= "i";
                             $arrayAtributosFiltro[] = $ativo;
                         }
                             
                         break;
-                }
-
-                if($i < ($this->quantColunasTabela - 1))
-                    $query .= $this->nomesColunasTabela[$i] . " = ? AND ";
-                else
-                    $query .= $this->nomesColunasTabela[$i] . " = ?";
+                }  
             }
 
+            // Chama a função que cria uma conexão com o banco de dados
             $con = getConexaoBancoMySQL();
+
             if(!empty($con)) {
 
+                // Cria um PreparedStatement com a query
                 $stmt = $con->prepare($query);
+
                 if(!empty($stmt)) {
+
+                    // Switch que, conforme o número de atributos no array de atributos, faz "bind" destes atributos com a string de tipos preenchida anteriormente
                     # Código com valores fixos, se modificar a tabela deve-se modificar esse switch
                     # Procurar alternativa mais modular
                     switch(count($arrayAtributosFiltro)){
@@ -588,19 +712,31 @@
                             break;
                     }
 
+                    // Tenta executar e receber o resultado em um ResultSet
                     $rs = $stmt->get_result();
+
                     if(!empty($rs)) {
 
+                        // Recebe a primeira linha da tabela e cria um array para retorno
                         $linha = $rs->fetch_assoc();
                         $arrayRetorno = [];
+
                         while(!empty($linha)) {
+
+                            // Enquanto houverem linhas na tabela, salva os dados em um usuário e o adiciona no array de retorno
                             $arrayRetorno[] = preencherUsuarioSaida($linha);
+
+                            // Avança para a próxima linha no ResultSet
                             $linha = $rs->fetch_assoc();
                         }
+
+                        // Encerra as conexões e verifica se o array contém algum usuário. Se não conter retorna 'null', senão retorna o array.
                         encerrarConexoesComRS($con, $stmt, $rs);
                         return (count($arrayRetorno) == 0) ? null : $arrayRetorno;
                     }
                     else {
+
+                        // Encerra as conexões e envia uma mensagem se ocorrer algum erro na criação do ResultSet
                         $erro = mysqli_connect_error();
                         encerrarConexoesComRS($con, $stmt, $rs);
                         exit("\nErro ao definir ResultSet em UsuarioDAOMySQL->selectWhere(): $erro");
@@ -608,6 +744,8 @@
                         
                 }
                 else {
+
+                    // Encerra as conexões e envia uma mensagem se ocorrer algum erro na criação do PreparedStatement
                     $erro = mysqli_connect_error();
                     encerrarConexoesSemRS($con, $stmt);
                     exit("\nErro ao definir PreparedStatement em UsuarioDAOMySQL->selectWhere(): $erro");
@@ -615,15 +753,20 @@
                     
             }
             else {
+
+                // Encerra as conexões e envia uma mensagem se ocorrer algum erro na criação da conexão
                 $erro = mysqli_connect_error();
                 encerrarConexoesSemRS($con, $stmt);
                 exit("\nErro ao definir Connection em UsuarioDAOMySQL->selectWhere(): $erro");
             }
                 
         }
+
         public function update(UsuarioVO $uVO) : bool {
+            // Inicialização da query para pesquisa
             $query = "UPDATE $this->nomeTabela SET ";
 
+            // Loop para preencher a query conforme a quantidade de colunas na tabela
             for ($i = 1; $i < $this->quantColunasTabela; $i++) { 
                 if($i < $this->quantColunasTabela - 1) {
                     $query .= $this->nomesColunasTabela[$i] . " = ?, ";
@@ -632,79 +775,101 @@
                     $query .= $this->nomesColunasTabela[$i] . " = ? ";
                 }
             }
-
             $query .= "WHERE " . $this->nomesColunasTabela[0] . " = ?";
 
+            // Chama a função que cria uma conexão com o banco de dados
             $con = getConexaoBancoMySQL();
+
             if(!empty($con)) {
                 
+                // Cria um PreparedStatement com esta query
                 $stmt = $con->prepare($query);
+
                 if(!empty($stmt)) {
+                    // Cria um array com todos os dados informados no usuário
                     $dadosUsuario = criarArrayDados($uVO);
     
-                $stmt->bind_param("iisssssssii",
-                    $dadosUsuario[0],
-                    $dadosUsuario[1],
-                    $dadosUsuario[2],
-                    $dadosUsuario[3],
-                    $dadosUsuario[4],
-                    $dadosUsuario[5],
-                    $dadosUsuario[6],
-                    $dadosUsuario[7],
-                    $dadosUsuario[8],
-                    $dadosUsuario[9],
-                    $dadosUsuario[10]
-                );
+                    // Dá "bind" destes dados no PreparedStatement
+                    $stmt->bind_param("iisssssssii",
+                        $dadosUsuario[0],
+                        $dadosUsuario[1],
+                        $dadosUsuario[2],
+                        $dadosUsuario[3],
+                        $dadosUsuario[4],
+                        $dadosUsuario[5],
+                        $dadosUsuario[6],
+                        $dadosUsuario[7],
+                        $dadosUsuario[8],
+                        $dadosUsuario[9],
+                        $dadosUsuario[10]
+                    );
                 
                 if($stmt->execute()) {
+                    // Se o código executar sem erro, encerra as conexões e retorna 'true'
                     encerrarConexoesSemRS($con, $stmt);
                     return true;
                 }
                 else {
+                    // Se o código executar com erro ou não executar, encerra as conexões e retorna 'false'
                     encerrarConexoesSemRS($con, $stmt);
                     return false;
                 }
                 
                 }
                 else {
+                    // Encerra as conexões e envia uma mensagem se ocorrer algum erro na criação do PreparedStatement
                     $erro = mysqli_connect_error();
                     encerrarConexoesSemRS($con, $stmt);
                     exit("\nErro ao definir PreparedStatement em UsuarioDAOMySQL->update(): $erro");
                 }
             }
             else {
+                // Encerra as conexões e envia uma mensagem se ocorrer algum erro na criação da conexão
                 $erro = mysqli_connect_error();
                 encerrarConexoesSemRS($con, $stmt);
                 exit("\nErro ao definir Connection em UsuarioDAOMySQL->update(): $erro");
             }
         }
         public function delete(int $id) : bool {
+            // Guardar uma cópia local do id do usuário para passagem por referência mais tarde
             $idUsuario = $id;
+
+            // Criação da query de conexão já pronta
             $query = "DELETE FROM $this->nomeTabela WHERE " . $this->nomesColunasTabela[0] . " = ?";
 
+            // Chama a função que cria uma conexão com o banco de dados
             $con = getConexaoBancoMySQL();
+
             if(!empty($con)) {
                 
+                // Dá "bind" do id no PreparedStatement
                 $stmt = $con->prepare($query);
+
                 if(!empty($stmt)) {
+
+
                     $stmt->bind_param("i", $idUsuario);
 
                     if($stmt->execute()) {
+                        // Se o código executar sem erro, encerra as conexões e retorna 'true'
                         encerrarConexoesSemRS($con, $stmt);
                         return true;
                     }
                     else {
+                        // Se o código executar com erro ou não executar, encerra as conexões e retorna 'false'
                         encerrarConexoesSemRS($con, $stmt);
                         return false;
                     }
                 }
                 else {
+                    // Encerra as conexões e envia uma mensagem se ocorrer algum erro na criação do PreparedStatement
                     $erro = mysqli_connect_error();
                     encerrarConexoesSemRS($con, $stmt);
                     exit("\nErro ao definir PreparedStatement em UsuarioDAOMySQL->delete(): $erro");
                 }
             }
             else {
+                // Encerra as conexões e envia uma mensagem se ocorrer algum erro na criação da conexão
                 $erro = mysqli_connect_error();
                 encerrarConexoesSemRS($con, $stmt);
                 exit("\nErro ao definir Connection em UsuarioDAOMySQL->delete(): $erro");
