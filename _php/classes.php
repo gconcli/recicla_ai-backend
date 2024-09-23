@@ -5,6 +5,7 @@
      * - ID (INT)
      * - Data de Criação (DATE)
      * - Ativo (TINYINT(1))
+     * @author Eduardo Pereira Moreira - eduardopereiramoreira1995+code@gmail.com
      */
     abstract class ObjetoVO {
         // Atributos do objeto
@@ -43,10 +44,10 @@
      * - E-mail VARCHAR(70)
      * - Data de Aniversário (DATE)
      * - Descrição VARCHAR(500)
-     * @extends ObjetoVO
+     * @author Eduardo Pereira Moreira - eduardopereiramoreira1995+code@gmail.com
      */
-    class UsuarioVO extends ObjetoVO {
-        // Atributos finais estáticos da classe
+    final class UsuarioVO extends ObjetoVO {
+        // Atributos estáticos da classe
         private static $nomeTabela = "Usuario";
         private static $nomesColunasTabela = [
             "idUsuario",
@@ -139,7 +140,7 @@
 
     /**
      * Implementação de IUsuarioDAO para MySQL
-     * @implements IUsuarioDAO
+     * @author Eduardo Pereira Moreira - eduardopereiramoreira1995+code@gmail.com
      */
     final class UsuarioDAOMySQL implements IUsuarioDAO {
         // Variáveis para evitar múltiplos acessos de métodos estáticos
@@ -151,6 +152,39 @@
             $this->nomeTabela = UsuarioVO::getNomeTabela();
             $this->nomesColunasTabela = UsuarioVO::getNomesColunasTabela();
             $this->quantColunasTabela = count($this->nomesColunasTabela);
+        }
+
+        private function criarArrayDados() {
+            return [
+                $uVO->getId(),
+                $uVO->getIdImagem(),
+                $uVO->getIdTipoUsuario(),
+                $uVO->getLogin(),
+                $uVO->getSenha(),
+                $uVO->getNome(),
+                $uVO->getEmail(),
+                $uVO->getDataAniversario(),
+                $uVO->getDescricao(),
+                $uVO->getDataCriacao(),
+                intval($uVO->isAtivo())
+            ];
+        }
+
+        private function preencherUsuarioSaida(&$linha) {
+            $uVOs = new UsuarioVO();
+            $uVOs->setId($linha[$this->nomesColunasTabela[0]]);
+            $uVOs->setIdImagem($linha[$this->nomesColunasTabela[1]]);
+            $uVOs->setIdTipoUsuario($linha[$this->nomesColunasTabela[2]]);
+            $uVOs->setLogin($linha[$this->nomesColunasTabela[3]]);
+            $uVOs->setSenha($hash);
+            $uVOs->setNome($linha[$this->nomesColunasTabela[5]]);
+            $uVOs->setEmail($linha[$this->nomesColunasTabela[6]]);
+            $uVOs->setDataAniversario($linha[$this->nomesColunasTabela[7]]);
+            $uVOs->setDescricao($linha[$this->nomesColunasTabela[8]]);
+            $uVOs->setDataCriacao($linha[$this->nomesColunasTabela[9]]);
+            $uVOs->setAtivo(boolval($linha[$this->nomesColunasTabela[10]]));
+
+            return $uVOs;
         }
 
         public function login(string $login, string $senha) : UsuarioVO | bool | null {
@@ -170,22 +204,8 @@
                         if(isset($linha) && $linha != false) {
 
                             $hash = $linha[$this->nomesColunasTabela[4]];
-                            if(password_verify($senha, $hash)) {
-                                $uVOsaida = new UsuarioVO();
-                                $uVOsaida->setId($linha[$this->nomesColunasTabela[0]]);
-                                $uVOsaida->setIdImagem($linha[$this->nomesColunasTabela[1]]);
-                                $uVOsaida->setIdTipoUsuario($linha[$this->nomesColunasTabela[2]]);
-                                $uVOsaida->setLogin($linha[$this->nomesColunasTabela[3]]);
-                                $uVOsaida->setSenha($hash);
-                                $uVOsaida->setNome($linha[$this->nomesColunasTabela[5]]);
-                                $uVOsaida->setEmail($linha[$this->nomesColunasTabela[6]]);
-                                $uVOsaida->setDataAniversario($linha[$this->nomesColunasTabela[7]]);
-                                $uVOsaida->setDescricao($linha[$this->nomesColunasTabela[8]]);
-                                $uVOsaida->setDataCriacao($linha[$this->nomesColunasTabela[9]]);
-                                $uVOsaida->setAtivo(boolval($linha[$this->nomesColunasTabela[10]]));
-                
-                                return $uVOsaida;
-                            }
+                            if(password_verify($senha, $hash))          
+                                return preencherUsuarioSaida($linha);
                             else
                                 return false;
                         }
@@ -201,7 +221,7 @@
             else
                 exit("Erro ao definir Connection em UsuarioDAOMySQL->login(...): " . mysqli_connect_error());
         }
-        public function insert(UsuarioVO $uVO): bool {
+        public function insert(UsuarioVO $uVO) : bool {
 
             $query1 = "INSERT INTO $this->nomeTabela(" . $this->nomesColunasTabela[0];
             $query2 = "VALUES (null, ";
@@ -223,31 +243,20 @@
                 $query = "$query1 $query2";
                 $stmt = $con->prepare($query);
                 if(!empty($stmt)) {
-                    $dadosUsuario = [
-                        $uVO->getIdImagem(),
-                        $uVO->getIdTipoUsuario(),
-                        $uVO->getLogin(),
-                        $uVO->getSenha(),
-                        $uVO->getNome(),
-                        $uVO->getEmail(),
-                        $uVO->getDataAniversario(),
-                        $uVO->getDescricao(),
-                        $uVO->getDataCriacao(),
-                        intval($uVO->isAtivo())
-                    ];
+                    $dadosUsuario = criarArrayDados();
     
-                $stmt->bind_param("iisssssssi",
-                    $dadosUsuario[1],
-                    $dadosUsuario[2],
-                    $dadosUsuario[3],
-                    $dadosUsuario[4],
-                    $dadosUsuario[5],
-                    $dadosUsuario[6],
-                    $dadosUsuario[7],
-                    $dadosUsuario[8],
-                    $dadosUsuario[9],
-                    $dadosUsuario[10]
-                );
+                    $stmt->bind_param("iisssssssi",
+                        $dadosUsuario[1],
+                        $dadosUsuario[2],
+                        $dadosUsuario[3],
+                        $dadosUsuario[4],
+                        $dadosUsuario[5],
+                        $dadosUsuario[6],
+                        $dadosUsuario[7],
+                        $dadosUsuario[8],
+                        $dadosUsuario[9],
+                        $dadosUsuario[10]
+                    );
                 return $stmt->execute();
                 
                 }
@@ -259,7 +268,7 @@
             
             
         }
-        public function selectAll(): ?array {
+        public function selectAll() : ?array {
             $query = "SELECT * FROM $this->nomeTabela";
 
             $con = getConexaoBancoMySQL();
@@ -275,20 +284,7 @@
 
                             $arrayRetorno = [];
                             while(isset($linha)) {
-                                $uVOsaida = new UsuarioVO();
-                                $uVOsaida->setId($linha[$this->nomesColunasTabela[0]]);
-                                $uVOsaida->setIdImagem($linha[$this->nomesColunasTabela[1]]);
-                                $uVOsaida->setIdTipoUsuario($linha[$this->nomesColunasTabela[2]]);
-                                $uVOsaida->setLogin($linha[$this->nomesColunasTabela[3]]);
-                                $uVOsaida->setSenha($linha[$this->nomesColunasTabela[4]]);
-                                $uVOsaida->setNome($linha[$this->nomesColunasTabela[5]]);
-                                $uVOsaida->setEmail($linha[$this->nomesColunasTabela[6]]);
-                                $uVOsaida->setDataAniversario($linha[$this->nomesColunasTabela[7]]);
-                                $uVOsaida->setDescricao($linha[$this->nomesColunasTabela[8]]);
-                                $uVOsaida->setDataCriacao($linha[$this->nomesColunasTabela[9]]);
-                                $uVOsaida->setAtivo(boolval($linha[$this->nomesColunasTabela[10]]));
-
-                                $arrayRetorno[] = $uVOsaida;
+                                $arrayRetorno[] = preencherUsuarioSaida($linha);
                             }
 
                             return (count($arrayRetorno) == 0) ? null : $arrayRetorno;
@@ -305,12 +301,14 @@
             else
                 exit("Erro ao definir Connection em UsuarioDAOMySQL->selectAll(...): " . mysqli_connect_error());
         }
-        public function selectWhere(UsuarioVO $uVO): ?array {
+        public function selectWhere(UsuarioVO $uVO) : ?array {
             $query = "SELECT * FROM $this->nomeTabela WHERE ";
 
             $tiposAtributos = "";
             $arrayAtributosFiltro = [];
             for ($i = 0; $i < $this->quantColunasTabela; $i++) { 
+                    # Código com valores fixos, se modificar a tabela deve-se modificar esse switch
+                    # Procurar alternativa mais modular
                 switch($i) {
                     case 0:
                         $id = $uVO->getId();
@@ -545,20 +543,7 @@
 
                             $arrayRetorno = [];
                             while(isset($linha)) {
-                                $uVOsaida = new UsuarioVO();
-                                $uVOsaida->setId($linha[$this->nomesColunasTabela[0]]);
-                                $uVOsaida->setIdImagem($linha[$this->nomesColunasTabela[1]]);
-                                $uVOsaida->setIdTipoUsuario($linha[$this->nomesColunasTabela[2]]);
-                                $uVOsaida->setLogin($linha[$this->nomesColunasTabela[3]]);
-                                $uVOsaida->setSenha($linha[$this->nomesColunasTabela[4]]);
-                                $uVOsaida->setNome($linha[$this->nomesColunasTabela[5]]);
-                                $uVOsaida->setEmail($linha[$this->nomesColunasTabela[6]]);
-                                $uVOsaida->setDataAniversario($linha[$this->nomesColunasTabela[7]]);
-                                $uVOsaida->setDescricao($linha[$this->nomesColunasTabela[8]]);
-                                $uVOsaida->setDataCriacao($linha[$this->nomesColunasTabela[9]]);
-                                $uVOsaida->setAtivo($linha[$this->nomesColunasTabela[10]]);
-
-                                $arrayRetorno[] = $uVOsaida;
+                                $arrayRetorno[] = preencherUsuarioSaida($linha);
                             }
 
                             return (count($arrayRetorno) == 0) ? null : $arrayRetorno;
@@ -575,7 +560,7 @@
             else
                 exit("Erro ao definir Connection em UsuarioDAOMySQL->selectWhere(...): " . mysqli_connect_error());
         }
-        public function update(UsuarioVO $uVO): bool {
+        public function update(UsuarioVO $uVO) : bool {
             $query = "UPDATE $this->nomeTabela SET ";
 
             for ($i = 1; $i < $this->quantColunasTabela; $i++) { 
@@ -594,21 +579,9 @@
                 
                 $stmt = $con->prepare($query);
                 if(!empty($stmt)) {
-                    $dadosUsuario = [
-                        $uVO->getIdImagem(),
-                        $uVO->getIdTipoUsuario(),
-                        $uVO->getLogin(),
-                        $uVO->getSenha(),
-                        $uVO->getNome(),
-                        $uVO->getEmail(),
-                        $uVO->getDataAniversario(),
-                        $uVO->getDescricao(),
-                        $uVO->getDataCriacao(),
-                        intval($uVO->isAtivo()),
-                        $uVO->getId()
-                    ];
+                    $dadosUsuario = criarArrayDados();
     
-                $stmt->bind_param("isssssssii",
+                $stmt->bind_param("iisssssssii",
                     $dadosUsuario[0],
                     $dadosUsuario[1],
                     $dadosUsuario[2],
@@ -630,7 +603,7 @@
             else
                 exit("Erro ao definir Connection em UsuarioDAOMySQL->update(...): " . mysqli_connect_error());
         }
-        public function delete(int $id): bool {
+        public function delete(int $id) : bool {
             $idUsuario = $id;
             $query = "DELETE FROM $this->nomeTabela WHERE " . $this->nomesColunasTabela[0] . " = ?";
 
@@ -650,5 +623,46 @@
         }
     }
 
-    
+    /**
+     * Camada de abstração entre DAO e Front-End
+     * @author Eduardo Pereira Moreira - eduardopereiramoreira1995+code@gmail.com
+     */
+    final class ServicosUsuario {
+        private $interfaceUsuarioDAO;
+
+        public function __construct() {
+            $this->interfaceUsuarioDAO = new UsuarioDAOMySQL();
+        }
+
+        public function loginUsuario(string $login, string $senha) : UsuarioVO | bool | null {return $this->interfaceUsuarioDAO->login($login, $senha);}
+
+        public function cadastroUsuario(UsuarioVO $uVO) : bool {return $this->interfaceUsuarioDAO->insert($uVO);}
+
+        public function listarUsuarios() : ?array {return $this->interfaceUsuarioDAO->selectAll();}
+
+        public function pesquisarUsuario(UsuarioVO $uVO) : ?array {return $this->interfaceUsuarioDAO->selectWhere($uVO);}
+
+        public function atualizarUsuario(UsuarioVO $uVO) : bool {return $this->interfaceUsuarioDAO->update($uVO);}
+
+        public function deletarUsuario($id) : bool {return $this->interfaceUsuarioDAO->delete($id);}
+    }
+
+    /**
+     * Classe com métodos estáticos para uso no front-end
+     * @author Eduardo Pereira Moreira - eduardopereiramoreira1995+code@gmail.com
+     */
+    final class FactoryServicos {
+        private static $servicosUsuario;
+
+        function __construct() {
+            self::$servicosUsuario = new ServicosUsuario();
+        }
+
+        public static function getServicosUsuario() {return self::$servicosUsuario;}
+    }
+
+    // Exemplo de uso
+    //$loginTeste = $_POST['login'];
+    //$senhaTeste = $_POST['senha'];
+    //FactoryServicos::getServicosUsuario()->loginUsuario($loginTeste, $senhaTeste);
 ?>
