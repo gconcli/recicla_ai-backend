@@ -16,7 +16,7 @@
         if($con->connect_error) {
             exit("Falha na conexão: $con->connect_error");
         }
-        echo "Sucesso na conexão com o banco de dados";
+        //echo "Sucesso na conexão com o banco de dados";
         return $con;
     }
 ?>

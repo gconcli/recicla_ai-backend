@@ -18,12 +18,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($resultado->num_rows > 0) {
         $usuario = $resultado->fetch_assoc();
-        
+
         // Verificar se a senha está correta
         if (password_verify($senha, $usuario['senha'])) {
             // Armazenar informações do usuário na sessão
             $_SESSION['usuario_id'] = $usuario['id']; // Supondo que você tenha um campo 'id'
-            header("Location: ../_public/sessao.html");
+            header("Location: ../_public/sessao.php");
             // Redireciona para a página da sessão (aqui, por não usar alert, deixei location do php)
             exit(); // Encerra o script após o redirecionamento
         } else {
@@ -42,4 +42,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->close();
     $con->close();
 }
-?>

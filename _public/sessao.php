@@ -1,5 +1,11 @@
+<?php
+    include('../_php/dados_sessao.php')
+?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
+
+<!-- Este arquivo é do tipo php ao invés de html para códigos da sessão --> 
 
 <head>
     <meta charset="UTF-8">
@@ -52,7 +58,7 @@
 
     <main>
         <section id="inicio-sessao">
-            <h2>Olá, $usuário!</h2> <!-- TODO: fazer back-end para chamar o nome do usuário aqui -->
+            <h2>Olá, <?php echo htmlspecialchars($nomeCompleto); ?>!</h2> <!-- Exibe o nome do usuário de acordo com dado da seção  -->
         </section>
 
         <section id="editar-usuario">
