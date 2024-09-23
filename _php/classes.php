@@ -11,7 +11,7 @@
      * @author Eduardo Pereira Moreira - eduardopereiramoreira1995+code@gmail.com
      */
     abstract class ObjetoVO {
-        
+
         // Atributos do objeto
         private $id;
         private $dataCriacao;
@@ -887,23 +887,49 @@
      */
     final class ServicosUsuario {
 
+        // Atributos: Interfaces DAO de usuário
         private $interfaceUsuarioDAO;
 
+        // Construtor
         public function __construct() {
             $this->interfaceUsuarioDAO = new UsuarioDAOMySQL();
         }
 
+        /**
+         * Chama a função 'login' em 'interfaceUsuarioDAO'
+         * @param string $login - Login digitado no site
+         * @param string $senha - Senha digitada no site
+         */
         public function loginUsuario(string $login, string $senha) : UsuarioVO | bool | null {return $this->interfaceUsuarioDAO->login($login, $senha);}
 
+        /**
+         * Chama a função 'insert' em 'interfaceUsuarioDAO'
+         * @param UsuarioVO $uVO - Objeto com todos os dados do usuário para registro
+         */
         public function cadastroUsuario(UsuarioVO $uVO) : bool {return $this->interfaceUsuarioDAO->insert($uVO);}
 
+        /**
+         * Chama a função 'selectAll' em 'interfaceUsuarioDAO'
+         */
         public function listarUsuarios() : ?array {return $this->interfaceUsuarioDAO->selectAll();}
 
+        /**
+         * Chama a função 'selectWhere' em 'interfaceUsuarioDAO'
+         * @param UsuarioVO $uVO - Objeto com todos os dados de filtragem de usuário para pesquisa
+         */
         public function pesquisarUsuario(UsuarioVO $uVO) : ?array {return $this->interfaceUsuarioDAO->selectWhere($uVO);}
 
+        /**
+         * Chama a função 'update' em 'interfaceUsuarioDAO'
+         * @param UsuarioVO $uVO - Objeto com todos os dados do usuário para atualização
+         */
         public function atualizarUsuario(UsuarioVO $uVO) : bool {return $this->interfaceUsuarioDAO->update($uVO);}
 
-        public function deletarUsuario($id) : bool {return $this->interfaceUsuarioDAO->delete($id);}
+        /**
+         * Chama a função 'delete' em 'interfaceUsuarioDAO'
+         * @param int $id - ID do usuário que será removido do banco de dados
+         */
+        public function deletarUsuario(int $id) : bool {return $this->interfaceUsuarioDAO->delete($id);}
     }
 
     /**
@@ -912,12 +938,15 @@
      */
     final class FactoryServicos {
 
+        // Atributos: Todos aqui devem ser no mesmo padrão "servicos"
         private static $servicosUsuario;
 
+        // Construtor
         function __construct() {
             self::$servicosUsuario = new ServicosUsuario();
         }
 
+        // Getter de 'servicosUsuario'
         public static function getServicosUsuario() : ServicosUsuario {return self::$servicosUsuario;}
     }
 ?>
