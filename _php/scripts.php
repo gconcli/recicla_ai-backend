@@ -3,6 +3,7 @@
     /**
      * Cria e retorna uma conexão com o banco de dados MySQL especificado na função
      * @return mysqli - O objeto "mysqli" da conexão
+     * @author Eduardo Pereira Moreira - eduardopereiramoreira1995+code@gmail.com
      */
     function getConexaoBancoMySQL() : mysqli {
         $servidor = "localhost";
