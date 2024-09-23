@@ -8,7 +8,8 @@
         $servidor = "localhost";
         $usuario = "root";
         $senha = "";
-        $bancoDeDados = "recicla_ai";
+        $bancoDeDados = "recicla_ai2";  // Modificado para testes
+        //$bancoDeDados = "recicla_ai";
 
         $con = new mysqli($servidor, $usuario, $senha, $bancoDeDados);
 
