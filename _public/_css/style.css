@@ -278,6 +278,24 @@ main section h2 {
     margin-bottom: 1rem;
 }
 
+.form-container .botao-sessao {
+    width: 100%;
+    border-radius: 4%;
+    margin-left: 0.5rem;
+    margin-top: 0.3rem;
+}
+
+.form-container a {
+    font-size: 0.8em;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    margin-left: 0.4rem;
+}
+
+main h3 {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 1.2em;
+}
+
 main section p, main section li {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     text-align: justify;
@@ -296,6 +314,10 @@ input {
     margin: 0.2rem;
     width: 100%;
     margin-bottom: 0.5rem;
+}
+
+h3 a {
+    color: rgb(45, 54, 40);
 }
 
 /* Footer */
@@ -393,5 +415,52 @@ footer p {
     }
 }
 
+<<<<<<< HEAD
 
 /* PARA FAZER: Depois, adicionar ao menu e à div do carrossel de imagens */
+=======
+@media (max-width: 1000px) {
+    #menu-hamburguer {
+        display: block;
+        font-size: 2rem;
+        cursor: pointer;
+        padding-right: 2rem;
+        z-index: 1000; /* Garantir que o ícone também fique à frente */
+    }
+
+    /* Esconder o menu de navegação padrão */
+    header ul {
+        display: none;
+    }
+
+    /* Mostrar o menu quando o ícone de hambúrguer for clicado */
+    header ul.active {
+        margin-top: 0px;
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 6rem;
+        right: 0;
+        background-color: #E1EED0;
+        width: 100%;
+        text-align: right;
+        z-index: 999; /* Colocar um z-index alto */
+    }
+
+    header div {
+        flex-direction: row; /* Mantém os itens lado a lado */
+    }
+
+    /* Ajuste da logo em telas pequenas */
+    header div img {
+        width: 45%; /* Ajusta o tamanho da logo em telas pequenas */
+        height: auto;
+    }
+
+    /* Ajustar o botão de acessibilidade */
+    #botao-acessibilidade {
+        position: static; /* Remove o position absoluto */
+        margin-left: auto; /* Move os botões para o lado direito */
+    }
+}
+>>>>>>> 3ca56ee7ffd0ff05653d5ce8834bf27c77088627

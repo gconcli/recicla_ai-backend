@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recicla Aí - Home</title>
+    <title>Recicla Aí - Trocar senha</title>
     <link rel="icon" href="_imgs/icone-recicla-ai.png" type="image/x-icon">
     <link rel="stylesheet" type="text/css" href="_css/style.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -32,7 +32,6 @@
                 <li><a href="entrar.html">Entrar</a></li>
             </ul>
         </div>
-
         <script>
             function toggleMenu() {
                 const menu = document.querySelector('ul');
@@ -51,34 +50,22 @@
     <button id="btnProx">&raquo;</button>
 
     <main>
-        <section id="introducao">
-            <h2>Bem-vindo ao Recicla Aí!</h2>
-            <p>O Recicla Aí foi criado para conscientizar e informar sobre a importância da reciclagem de eletrônicos.
-                Com o aumento do uso de dispositivos eletrônicos, o descarte inadequado se tornou um grande desafio para
-                o meio ambiente e a saúde pública. Nosso objetivo é ajudar você a entender os impactos do lixo
-                eletrônico e guiar para o descarte correto, proporcionando informações essenciais sobre como, onde, e
-                por que reciclar.</p>
-            <p>Aqui, você encontrará tudo o que precisa saber para contribuir com um futuro mais sustentável. Junte-se a
-                nós nessa missão de cuidar do planeta!</p>
-        </section>
         <section id="cadastrar">
-            <h2>Cadastre-se para mais informações!</h2>
+            <h2>Trocar senha:</h2>
             <div class="form-container">
-                <form name="cadastro" action="../_php/inserir_usuario.php" method="post"> <!-- TODO: Depois modificar o back-end se quiser -->
-                    <label for="nome">Nome completo:</label>
-                    <input type="text" id="nome" name="nome" placeholder="José da Silva" required>
-                    <br>
+                <form name="cadastro" action="../_php/atualizar_senha.php" method="post">  <!-- TODO: Depois modificar o back-end se quiser -->
                     <label for="email">E-mail:</label>
-                    <input type="email" id="email" name="email" placeholder="exemplo@email.com" required>
+                    <input type="text" id="email" name="email" placeholder="exemplo@email.com" required>
                     <br>
-                    <label for="senha">Senha:</label>
+                    <label for="senha">Nova senha:</label>
                     <input type="password" id="senha" name="senha" placeholder="Digite sua senha" required>
                     <br>
-                    <label for="confirmar-senha">Confirmar Senha:</label>
-                    <input type="password" id="confirmar-senha" name="confirmar-senha" placeholder="Confirme sua senha" required>
+                    <label for="senha">Confirmar a senha:</label>
+                    <input type="password" id="confirmarSenha" name="confirmarSenha" placeholder="Confirme sua senha" required>
                     <br>
-                    <button type="submit" class="botao-sessao">Cadastrar</button>
+                    <button type="submit" class="botao-sessao">Redefinir</a></button>
                     <button type="reset" class="botao-sessao">Limpar</button>
+                    <p>*Campos de preenchimento obrigatórios</p>
                 </form>
             </div>
         </section>
