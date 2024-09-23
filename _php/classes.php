@@ -11,6 +11,7 @@
      * @author Eduardo Pereira Moreira - eduardopereiramoreira1995+code@gmail.com
      */
     abstract class ObjetoVO {
+        
         // Atributos do objeto
         private $id;
         private $dataCriacao;
@@ -50,6 +51,7 @@
      * @author Eduardo Pereira Moreira - eduardopereiramoreira1995+code@gmail.com
      */
     final class UsuarioVO extends ObjetoVO {
+
         // Atributos estáticos da classe
         private static $nomeTabela = "Usuario";
         private static $nomesColunasTabela = [
@@ -146,6 +148,7 @@
      * @author Eduardo Pereira Moreira - eduardopereiramoreira1995+code@gmail.com
      */
     final class UsuarioDAOMySQL implements IUsuarioDAO {
+
         // Variáveis para evitar múltiplos acessos de métodos estáticos
         private $nomeTabela;
         private $nomesColunasTabela;
@@ -830,6 +833,7 @@
                 exit("\nErro ao definir Connection em UsuarioDAOMySQL->update(): $erro");
             }
         }
+
         public function delete(int $id) : bool {
             // Guardar uma cópia local do id do usuário para passagem por referência mais tarde
             $idUsuario = $id;
@@ -882,6 +886,7 @@
      * @author Eduardo Pereira Moreira - eduardopereiramoreira1995+code@gmail.com
      */
     final class ServicosUsuario {
+
         private $interfaceUsuarioDAO;
 
         public function __construct() {
@@ -906,6 +911,7 @@
      * @author Eduardo Pereira Moreira - eduardopereiramoreira1995+code@gmail.com
      */
     final class FactoryServicos {
+
         private static $servicosUsuario;
 
         function __construct() {
@@ -914,9 +920,4 @@
 
         public static function getServicosUsuario() : ServicosUsuario {return self::$servicosUsuario;}
     }
-
-    // Exemplo de uso
-    //$loginTeste = $_POST['login'];
-    //$senhaTeste = $_POST['senha'];
-    //FactoryServicos::getServicosUsuario()->loginUsuario($loginTeste, $senhaTeste);
 ?>
