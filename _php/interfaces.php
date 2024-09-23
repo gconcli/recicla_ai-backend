@@ -1,6 +1,7 @@
 <?php
     /**
      * Interface de modelo DAO para dados da tabela 'Usuario'
+     * @author Eduardo Pereira Moreira - eduardopereiramoreira1995+code@gmail.com
      */
     interface IUsuarioDAO {
         /**
