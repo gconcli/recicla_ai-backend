@@ -21,4 +21,22 @@
         // Removido para não aparecer na hora que vai para a página se sessão
         return $con;
     }
+
+    /**
+     * Destrói a sessão e os cookies para fazer logoff do usuário
+     * @author Eduardo Pereira Moreira - eduardopereiramoreira1995+code@gmail.com
+     */
+    function logoff() : void {
+        $_SESSION = array();
+
+        if (ini_get("session.use_cookies")) {
+            $params = session_get_cookie_params();
+            setcookie(session_name(), '', time() - 42000,
+                $params["path"], $params["domain"],
+                $params["secure"], $params["httponly"]
+            );
+        }
+
+        session_destroy();
+    }
 ?>
