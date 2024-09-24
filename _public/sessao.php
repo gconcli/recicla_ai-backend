@@ -74,8 +74,11 @@
                     <label for="email">E-mail:</label>
                     <input type="email" id="email" name="email" placeholder="exemplo@email.com" value="<?php echo htmlspecialchars($emailUsuario); ?>">
                     <br>
-                    <label for="senha">Senha:</label>
-                    <input type="password" id="senha" name="senha" placeholder="Digite sua senha">
+                    <label for="senhaAtual">Senha atual:</label>
+                    <input type="password" id="senhaAtual" name="senhaAtual" placeholder="Senha atual" required>
+                    <br>
+                    <label for="senhaNova">Senha Nova:</label>
+                    <input type="password" id="senhaNova" name="senha" placeholder="Senha Nova">
                     <br>
                     <button type="submit" name="atualizar" class="botao-sessao">Atualizar</button> <!-- Name nos botões para chamá-los na lógica do PHP -->
                     <button type="submit" name="excluir" class="botao-sessao">Excluir</button>
