@@ -1,20 +1,39 @@
 <?php
+    require_once 'scripts.php';
     require_once 'classes.php';
 
     $login = $_POST['login'];
-    $senha = $_POST['senha'];
+    $senhaAtual = $_POST['senhaAtual'];
 
-    $tentativaLogin = FactoryServicos::getServicosUsuario()->loginUsuario($login, $senha);
+    $tentativaLogin = FactoryServicos::getServicosUsuario()->loginUsuario($login, $senhaAtual);
 
     if(isset($tentativaLogin)) {
-        if($tentativaLogin == false) {
-            // Senha incorreta
+        if(!$tentativaLogin) {
+            echo"<script>
+                alert('Senha incorreta!');
+                window.location.href = '../index.html';
+            </script>";
         }
         else {
-            // Senha correta, '$tentativaLogin' contém os dados do usuário
+
+            session_start();
+            $_SESSION['id'] = $tentativaLogin->getId();
+            $_SESSION['idTipo'] = $tentativaLogin->getIdTipoUsuario();
+            $_SESSION['login'] = $tentativaLogin->getLogin();
+            $_SESSION['senha'] = $tentativaLogin->getSenha();
+            $_SESSION['nome'] = $tentativaLogin->getNome();
+            $_SESSION['email'] = $tentativaLogin->getEmail();
+
+            echo"<script>
+                alert('Dados corretos, fazendo login...');
+                window.location.href = '../index.html';
+            </script>";
         }
     }
     else {
-        // Usuário não encontrado
+        echo"<script>
+                alert('Usuário não encontrado!');
+                window.location.href = '../index.html';
+            </script>";
     }
 ?>
