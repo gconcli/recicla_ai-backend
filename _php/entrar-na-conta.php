@@ -1,5 +1,5 @@
 <?php
-include('scripts.php'); // Inclui a função de conexão
+require('scripts.php'); // Inclui a função de conexão
 
 session_start(); // Inicia a sessão
 

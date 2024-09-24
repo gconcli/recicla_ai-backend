@@ -1,5 +1,5 @@
 <?php
-include_once('scripts.php'); // Inclui a função de conexão
+require_once('scripts.php'); // Inclui a função de conexão
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();

@@ -1,5 +1,5 @@
 <?php
-    include('scripts.php'); // Inclui a função de conexão com o banco
+    require('scripts.php'); // Inclui a função de conexão com o banco
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $email = $_POST['email'];
