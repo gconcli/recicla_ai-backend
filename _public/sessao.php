@@ -1,6 +1,6 @@
 <?php
-    include('../_php/dados_sessao.php');
-    include('../_php/editar_cadastro.php');
+    require('../_php/dados_sessao.php');
+    require('../_php/editar_cadastro.php');
 ?>
 
 <!DOCTYPE html>
@@ -69,16 +69,17 @@
                 <form name="cadastro" action="../_php/editar_cadastro.php" method="post"> <!-- TODO: Depois configurar o back-end -->
                     <label for="nome">Nome completo:</label>
                     <!-- htmlspecialchars para campos já estarem preenchidos com os dados da seção do usuário (exceto senha): -->
-                    <input type="text" id="nome" name="nome" placeholder="José da Silva" value="<?php echo htmlspecialchars($nomeCompleto); ?>" required>
+                    <input type="text" id="nome" name="nome" placeholder="José da Silva" value="<?php echo htmlspecialchars($nomeCompleto); ?>">
                     <br>
                     <label for="email">E-mail:</label>
-                    <input type="email" id="email" name="email" placeholder="exemplo@email.com" value="<?php echo htmlspecialchars($emailUsuario); ?>" required>
+                    <input type="email" id="email" name="email" placeholder="exemplo@email.com" value="<?php echo htmlspecialchars($emailUsuario); ?>">
                     <br>
                     <label for="senha">Senha:</label>
-                    <input type="password" id="senha" name="senha" placeholder="Digite sua senha" required>
+                    <input type="password" id="senha" name="senha" placeholder="Digite sua senha">
                     <br>
                     <button type="submit" name="atualizar" class="botao-sessao">Atualizar</button> <!-- Name nos botões para chamá-los na lógica do PHP -->
                     <button type="submit" name="excluir" class="botao-sessao">Excluir</button>
+                    <button type="submit" name="sairDaConta" class="botao-sessao">Sair da conta</button>
                 </form>
             </div>
         </section>

@@ -1,5 +1,6 @@
 <?php
-include_once('../_php/dados_sessao.php'); // Inclui a função de conexão
+require_once('../_php/dados_sessao.php'); // Inclui a função de conexão
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -54,6 +55,16 @@ if (isset($_POST['excluir'])) {
         </script>";
     }
     $stmt->close();
+}
+
+// Código para sair da sessão ao clicar em "Sair da Conta"
+if (isset($_POST['sairDaConta'])) {
+    session_destroy(); // Destroi a sessão
+    echo "<script>
+            alert('Você saiu da conta.');
+            window.location.href = '../_public/entrar.html'; // Redireciona para a página de login
+          </script>";
+    exit();
 }
 
 $con->close();
