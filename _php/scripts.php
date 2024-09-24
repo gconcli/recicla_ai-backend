@@ -9,14 +9,16 @@
         $servidor = "localhost";
         $usuario = "root";
         $senha = "";
-        $bancoDeDados = "recicla_ai";
+        $bancoDeDados = "recicla_ai2";  // Modificado para testes
+        //$bancoDeDados = "recicla_ai";
 
         $con = new mysqli($servidor, $usuario, $senha, $bancoDeDados);
 
         if($con->connect_error) {
             exit("Falha na conexão: $con->connect_error");
         }
-        echo "Sucesso na conexão com o banco de dados";
+        //echo "Sucesso na conexão com o banco de dados";
+        // Removido para não aparecer na hora que vai para a página se sessão
         return $con;
     }
 ?>
