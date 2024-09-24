@@ -1,10 +1,11 @@
 <?php
-    require('scripts.php'); // Inclui a função de conexão com o banco
+    include('scripts.php'); // Inclui a função de conexão com o banco
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $email = $_POST['email'];
         $novaSenha = $_POST['senha'];
         $confirmarSenha = $_POST['confirmarSenha'];
+        $senhaAtual = $_POST['senhaAtual'];
 
         // Verificar se as senhas coincidem
         if ($novaSenha !== $confirmarSenha) {
@@ -28,6 +29,15 @@
                 window.location.href = '../_public/trocar-senha.html';
                 </script>";
             } else {
+
+                $usuario = $resultado->fetch_assoc();
+                if (password_verify($senhaAtual, $usuario['senha'])) {
+                    // Senha atual correta, pode alterar os dados
+                }
+                else {
+                    // Senha atual incorreta, não pode alterar os dados
+                }
+
                 // Atualizar a senha
                 $senhaHash = password_hash($novaSenha, PASSWORD_BCRYPT);
                 $stmt = $con->prepare("UPDATE usuarios SET senha = ? WHERE email = ?");
