@@ -2,11 +2,7 @@
 CREATE TABLE IF NOT EXISTS TipoUsuario (
     idTipoUsuario INT NOT NULL,
     
-    nomeTipoUsuario VARCHAR(50) NOT NULL UNIQUE,
-    descricaoTipoUsuario VARCHAR(500) NULL,
-    
-    dataCriacaoTipoUsuario DATE NOT NULL,
-    tipoUsuarioAtivo TINYINT(1) NOT NULL DEFAULT 1
+    nomeTipoUsuario VARCHAR(50) NOT NULL UNIQUE
 );
 -- Chave Primária
 ALTER TABLE TipoUsuario ADD CONSTRAINT PK_TIPOUSUARIO PRIMARY KEY(idTipoUsuario);
@@ -20,7 +16,7 @@ CREATE TABLE IF NOT EXISTS Usuario (
     loginUsuario VARCHAR(50) NOT NULL UNIQUE,
     senhaUsuario CHAR(60) NOT NULL,
     nomeUsuario VARCHAR(50) NOT NULL,
-    emailUsuario VARCHAR(70) NOT NULL,
+    emailUsuario VARCHAR(70) NOT NULL
 );
 -- Chave Primária
 ALTER TABLE Usuario ADD CONSTRAINT PK_USUARIO PRIMARY KEY(idUsuario);
