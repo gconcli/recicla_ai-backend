@@ -23,10 +23,51 @@
     }
 
     /**
+     * 
+     */
+    function fazerLogin(string $login, string $senhaAtual) : bool {
+
+        $tentativaLogin = FactoryServicos::getServicosUsuario()->loginUsuario($login, $senhaAtual);
+
+        if(isset($tentativaLogin)) {
+            if(!$tentativaLogin) {
+                echo"<script>
+                    alert('Senha incorreta!');
+                    window.location.href = '../index.html';
+                </script>";
+                return false;
+            }
+            else {
+                session_start();
+                
+                $_SESSION[UsuarioVO::getNomesColunasTabela[0]] = $tentativaLogin->getId();
+                $_SESSION[UsuarioVO::getNomesColunasTabela[1]] = $tentativaLogin->getIdTipoUsuario();
+                $_SESSION[UsuarioVO::getNomesColunasTabela[2]] = $tentativaLogin->getLogin();
+                $_SESSION[UsuarioVO::getNomesColunasTabela[3]] = $tentativaLogin->getSenha();
+                $_SESSION[UsuarioVO::getNomesColunasTabela[4]] = $tentativaLogin->getNome();
+                $_SESSION[UsuarioVO::getNomesColunasTabela[5]] = $tentativaLogin->getEmail();
+    
+                echo"<script>
+                    alert('Dados corretos, fazendo login...');
+                    window.location.href = '../index.html';
+                </script>";
+                return true;
+            }
+        }
+        else {
+            echo"<script>
+                    alert('Usuário não encontrado!');
+                    window.location.href = '../index.html';
+                </script>";
+                return false;
+        }
+    }
+
+    /**
      * Destrói a sessão e os cookies para fazer logoff do usuário
      * @author Eduardo Pereira Moreira - eduardopereiramoreira1995+code@gmail.com
      */
-    function logoff() : void {
+    function fazerLogoff() : void {
         $_SESSION = array();
 
         if (ini_get("session.use_cookies")) {
