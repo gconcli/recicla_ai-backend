@@ -36,16 +36,8 @@
     final class UsuarioVO extends ObjetoVO {
 
         // Atributos estáticos da classe
-        private static $nomeTabela = "Usuario";
-        private static $nomesColunasTabela = [
-            "idUsuario",
-
-            "idTipoUsuario",
-            "loginUsuario",
-            "senhaUsuario",
-            "nomeUsuario",
-            "emailUsuario"
-        ];
+        private static $nomeTabela;
+        private static $nomesColunasTabela;
 
         // Atributos do objeto
         private $idTipoUsuario;
@@ -57,6 +49,18 @@
         // Construtor
         public function __construct() {
             parent::__construct();
+
+            self::$nomeTabela = "Usuario";
+            self::$nomesColunasTabela = [
+                "idUsuario",
+    
+                "idTipoUsuario",
+                "loginUsuario",
+                "senhaUsuario",
+                "nomeUsuario",
+                "emailUsuario"
+            ];
+
             $this->idTipoUsuario = null;
             $this->login = null;
             $this->senha = null;

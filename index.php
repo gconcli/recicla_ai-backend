@@ -1,3 +1,17 @@
+<?php
+    require_once '_php/scripts.php';
+    require_once '_php/interfaces.php';
+    require_once '_php/classes.php';
+
+    if(isSessaoAtiva()) {
+        echo"<script>
+                alert('Você já está logado!');
+            </script>";
+        header('Location:sessao.php');
+        exit();
+    }
+?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -24,12 +38,12 @@
                 &#9776; <!-- Ícone de hamburguer -->
             </div>
             <ul>
-                <li><a href="index.html">Home</a></li>
+                <li><a href="index.php">Home</a></li>
                 <li><a href="o-que-e-descarte.html">O que é o Descarte Eletrônico</a></li>
                 <li><a href="por-que-descartar.html">Por que descartar corretamente?</a></li>
                 <li><a href="como-e-onde.html">Como e onde descartar</a></li>
                 <li><a href="sobre-nos.html">Sobre nós</a></li>
-                <li><a href="entrar.html">Entrar</a></li>
+                <li><a href="entrar.php">Entrar</a></li>
             </ul>
         </div>
 
@@ -66,7 +80,7 @@
             <div class="form-container">
                 <form name="cadastro" action="_php/novo_cadastro.php" method="post">
                     <label for="login">Login:</label>
-                    <input type="text" id="login" name="login" placeholder="jose1234" required>
+                    <input type="text" id="login" name="login" placeholder="usuario123" required>
                     <br>
                     <label for="nome">Nome Completo:</label>
                     <input type="text" id="nome" name="nome" placeholder="José da Silva" required>
@@ -74,11 +88,11 @@
                     <label for="email">E-mail:</label>
                     <input type="email" id="email" name="email" placeholder="jose@email.com" required>
                     <br>
-                    <label for="senha">Senha:</label>
-                    <input type="password" id="senha" name="senha" placeholder="Digite sua senha aqui" required>
+                    <label for="senha1">Senha:</label>
+                    <input type="password" id="senha1" name="senha1" placeholder="Digite a sua senha" required>
                     <br>
-                    <label for="confirmar-senha">Confirmar Senha:</label>
-                    <input type="password" id="confirmar-senha" name="confirmar-senha" placeholder="Digite novamente a sua senha aqui" required>
+                    <label for="senha2">Confirmar Senha:</label>
+                    <input type="password" id="senha2" name="senha2" placeholder="Digite novamente a sua senha" required>
                     <br>
                     <button type="submit" class="botao-sessao">Cadastrar</button>
                     <button type="reset" class="botao-sessao">Limpar</button>

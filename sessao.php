@@ -1,6 +1,15 @@
 <?php
-    require('../_php/dados_sessao.php');
-    require('../_php/editar_cadastro.php');
+    require_once '_php/scripts.php';
+    require_once '_php/interfaces.php';
+    require_once '_php/classes.php';
+
+    if(!isSessaoAtiva()) {
+        echo"<script>
+                alert('Você não está logado!');
+            </script>";
+        header('Location:index.php');
+        exit();
+    }
 ?>
 
 <!DOCTYPE html>
@@ -31,11 +40,11 @@
                 &#9776; <!-- Ícone de hamburguer -->
             </div>
             <ul>
-                <li><a href="index.html">Home</a></li>
+                <li><a href="index.php">Home</a></li>
                 <li><a href="o-que-e-descarte.html">O que é o Descarte Eletrônico</a></li>
                 <li><a href="por-que-descartar.html">Por que descartar corretamente?</a></li>
                 <li><a href="como-e-onde.html">Como e onde descartar</a></li>
-                <li><a href="sobre-nos.html">Sobre nós</a></li>
+                <li><a href="sobre-nos.php">Sobre nós</a></li>
                 <li><a href="">Entrou</a></li>
             </ul>
         </div>
@@ -66,19 +75,25 @@
             <h3 style="text-align: center">Editar cadastro do usuário</h3>
 
             <div class="form-container" style="justify-content: center;">
-                <form name="cadastro" action="../_php/editar_cadastro.php" method="post"> <!-- TODO: Depois configurar o back-end -->
-                    <label for="nome">Nome completo:</label>
+                <form name="cadastro" action="_php/atualizar_cadastro.php" method="post"> <!-- TODO: Depois configurar o back-end -->
                     <!-- htmlspecialchars para campos já estarem preenchidos com os dados da seção do usuário (exceto senha): -->
-                    <input type="text" id="nome" name="nome" placeholder="José da Silva" value="<?php echo htmlspecialchars($nomeCompleto); ?>">
+                    <label for="login">Login:</label>
+                    <input type="text" id="login" name="login" placeholder="usuario123" value="<?php echo htmlspecialchars($_SESSION[UsuarioVO::getNomesColunasTabela[2]]); ?>" required>
+                    <br>
+                    <label for="nome">Nome Completo:</label>
+                    <input type="text" id="nome" name="nome" placeholder="José da Silva" value="<?php echo htmlspecialchars($_SESSION[UsuarioVO::getNomesColunasTabela[4]]); ?>">
                     <br>
                     <label for="email">E-mail:</label>
-                    <input type="email" id="email" name="email" placeholder="exemplo@email.com" value="<?php echo htmlspecialchars($emailUsuario); ?>">
+                    <input type="email" id="email" name="email" placeholder="exemplo@email.com" value="<?php echo htmlspecialchars($_SESSION[UsuarioVO::getNomesColunasTabela[5]]); ?>">
                     <br>
-                    <label for="senhaAtual">Senha atual:</label>
-                    <input type="password" id="senhaAtual" name="senhaAtual" placeholder="Senha atual" required>
+                    <label for="senhaAtual">Senha Atual:</label>
+                    <input type="password" id="senhaAtual" name="senhaAtual" placeholder="Digite a sua senha atual" required>
                     <br>
-                    <label for="senhaNova">Senha Nova:</label>
-                    <input type="password" id="senhaNova" name="senha" placeholder="Senha Nova">
+                    <label for="senhaNova1">Senha Nova:</label>
+                    <input type="password" id="senhaNova1" name="senhaNova1" placeholder="Digite a sua senha nova">
+                    <br>
+                    <label for="senhaNova2">Confirmar Senha Nova:</label>
+                    <input type="password" id="senhaNova2" name="senhaNova2" placeholder="Digite novamente a sua senha nova">
                     <br>
                     <button type="submit" name="atualizar" class="botao-sessao">Atualizar</button> <!-- Name nos botões para chamá-los na lógica do PHP -->
                     <button type="submit" name="excluir" class="botao-sessao">Excluir</button>

@@ -1,30 +1,40 @@
 <?php
     require_once 'scripts.php';
+    require_once 'interfaces.php';
     require_once 'classes.php';
 
     $login = $_POST['login'];
-    $senha = $_POST['senha'];
+    $senha1 = $_POST['senha1'];
+    $senha2 = $_POST['senha2'];
     $nome = $_POST['nome'];
     $email = $_POST['email'];
 
-    $usuarioVO = new UsuarioVO();
-    $usuarioVO->setIdTipoUsuario(1);
-    $usuarioVO->setLogin($login);
-    $usuarioVO->setSenha($senha);
-    $usuarioVO->setNome($nome);
-    $usuarioVO->setEmail($email);
+    if($senha1 === $senha2) {
+        $usuarioVO = new UsuarioVO();
+        $usuarioVO->setIdTipoUsuario(1);
+        $usuarioVO->setLogin($login);
+        $usuarioVO->setSenha($senha1);
+        $usuarioVO->setNome($nome);
+        $usuarioVO->setEmail($email);
 
-    $tentativaCadastro = FactoryServicos::getServicosUsuario()->cadastroUsuario($usuarioVO);
+        $tentativaCadastro = FactoryServicos::getServicosUsuario()->cadastroUsuario($usuarioVO);
 
-    if(empty($tentativaCadastro)) {
-        echo"<script>
-                alert('Erro no cadastro!');
-                window.location.href = '../index.html';
-            </script>";
+        if(empty($tentativaCadastro)) {
+            echo"<script>
+                    alert('Erro no cadastro!');
+                    window.location.href = '../index.php';
+                </script>";
+        }
+        else {
+            fazerLogin($login, $senha);
+        }
+
+        session_start();
     }
     else {
-        fazerLogin($login, $senha);
+        echo"<script>
+                alert('As senhas não são iguais!');
+                window.location.href = '../index.php';
+            </script>";
     }
-
-    session_start();
 ?>

@@ -9,8 +9,7 @@
         $servidor = "localhost";
         $usuario = "root";
         $senha = "";
-        $bancoDeDados = "recicla_ai2";  // Modificado para testes
-        //$bancoDeDados = "recicla_ai";
+        $bancoDeDados = "recicla_ai";  // Modificado para testes
 
         $con = new mysqli($servidor, $usuario, $senha, $bancoDeDados);
 
@@ -31,10 +30,6 @@
 
         if(isset($tentativaLogin)) {
             if(!$tentativaLogin) {
-                echo"<script>
-                    alert('Senha incorreta!');
-                    window.location.href = '../index.html';
-                </script>";
                 return false;
             }
             else {
@@ -47,19 +42,11 @@
                 $_SESSION[UsuarioVO::getNomesColunasTabela[4]] = $tentativaLogin->getNome();
                 $_SESSION[UsuarioVO::getNomesColunasTabela[5]] = $tentativaLogin->getEmail();
     
-                echo"<script>
-                    alert('Dados corretos, fazendo login...');
-                    window.location.href = '../index.html';
-                </script>";
                 return true;
             }
         }
         else {
-            echo"<script>
-                    alert('Usuário não encontrado!');
-                    window.location.href = '../index.html';
-                </script>";
-                return false;
+            return false;
         }
     }
 

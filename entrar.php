@@ -1,3 +1,17 @@
+<?php
+    require_once '_php/scripts.php';
+    require_once '_php/interfaces.php';
+    require_once '_php/classes.php';
+
+    if(isSessaoAtiva()) {
+        echo"<script>
+                alert('Você já está logado!');
+            </script>";
+        header('Location:sessao.php');
+        exit();
+    }
+?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -24,12 +38,12 @@
                 &#9776; <!-- Ícone de hamburguer -->
             </div>
             <ul>
-                <li><a href="index.html">Home</a></li>
+                <li><a href="index.php">Home</a></li>
                 <li><a href="o-que-e-descarte.html">O que é o Descarte Eletrônico</a></li>
                 <li><a href="por-que-descartar.html">Por que descartar corretamente?</a></li>
                 <li><a href="como-e-onde.html">Como e onde descartar</a></li>
                 <li><a href="sobre-nos.html">Sobre nós</a></li>
-                <li><a href="entrar.html">Entrar</a></li>
+                <li><a href="entrar.php">Entrar</a></li>
             </ul>
         </div>
 
@@ -54,12 +68,12 @@
         <section id="entrar">
             <h2>Entrar na sua conta</h2>
             <div class="form-container">
-                <form name="entrar" action="../_php/entrar-na-conta.php" method="post">  <!-- TODO: Depois modificar o back-end se quiser -->
-                    <label for="email">E-mail:</label>
-                    <input type="email" id="email" name="email" placeholder="exemplo@email.com" required>
+                <form name="entrar" action="_php/login.php" method="post">  <!-- TODO: Depois modificar o back-end se quiser -->
+                    <label for="login">Login:</label>
+                    <input type="text" id="login" name="login" placeholder="usuario123" required>
                     <br>
                     <label for="senha">Senha:</label>
-                    <input type="password" id="senha" name="senha" placeholder="Digite sua senha" required>
+                    <input type="password" id="senha" name="senha" placeholder="Digite a sua senha" required>
                     <br>
                     <button type="submit" class="botao-sessao">Entrar</button>
                     <a href="trocar-senha.html">Esqueci a minha senha</a>
