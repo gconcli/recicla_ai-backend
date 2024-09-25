@@ -3,7 +3,7 @@
     require_once 'interfaces.php';
 
     /**
-     * Um objeto que contém os dados necessários para todas as tabelas no banco de dados
+     * Um objeto que contém os dados necessários para todas as tabelas no banco de dados.
      * Estes dados são:
      * - ID (INT)
      * @author Eduardo Pereira Moreira - eduardopereiramoreira1995+code@gmail.com
@@ -24,7 +24,7 @@
     }
 
     /**
-     * Um objeto que contém os dados necessários para a tabela 'Usuario' no banco de dados
+     * Um objeto que contém os dados necessários para a tabela 'Usuario' no banco de dados.
      * Estes dados são os dados de "ObjetoVO", mais:
      * - ID do Tipo de Usuário (INT)
      * - Login VARCHAR(50)
