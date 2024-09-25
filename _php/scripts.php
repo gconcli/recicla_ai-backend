@@ -39,7 +39,7 @@
             }
             else {
                 session_start();
-                
+
                 $_SESSION[UsuarioVO::getNomesColunasTabela[0]] = $tentativaLogin->getId();
                 $_SESSION[UsuarioVO::getNomesColunasTabela[1]] = $tentativaLogin->getIdTipoUsuario();
                 $_SESSION[UsuarioVO::getNomesColunasTabela[2]] = $tentativaLogin->getLogin();
@@ -79,5 +79,21 @@
         }
 
         session_destroy();
+    }
+
+    /**
+     * Retorna se existe uma SESSION ativa
+     * @return bool
+     */
+    function isSessaoAtiva() : bool
+    {
+        if ( php_sapi_name() !== 'cli' ) {
+            if ( version_compare(phpversion(), '5.4.0', '>=') ) {
+                return session_status() === PHP_SESSION_ACTIVE ? TRUE : FALSE;
+            } else {
+                return session_id() === '' ? FALSE : TRUE;
+            }
+        }
+        return FALSE;
     }
 ?>
