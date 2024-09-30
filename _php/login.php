@@ -4,9 +4,9 @@
     require_once 'classes.php';
 
     $login = $_POST['login'];
-    $senhaAtual = $_POST['senhaAtual'];
+    $senha = $_POST['senha'];
 
-    if(fazerLogin($login, $senhaAtual)) {
+    if(fazerLogin($login, $senha)) {
         echo"<script>
                     alert('Dados corretos, fazendo login...');
                     window.location.href = '../sessao.php';
