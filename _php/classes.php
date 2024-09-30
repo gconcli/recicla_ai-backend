@@ -275,7 +275,7 @@
 
                 if(!empty($stmt)) {
                     // Cria um array com todos os dados informados no usuário
-                    $dadosUsuario = criarArrayDados($uVO);
+                    $dadosUsuario = $this->criarArrayDados($uVO);
     
                     // Dá "bind" destes dados no PreparedStatement
                     $stmt->bind_param("issss",
@@ -288,12 +288,12 @@
 
                     if($stmt->execute()) {
                         // Se o código executar sem erro, encerra as conexões e retorna 'true'
-                        encerrarConexoesSemRS($con, $stmt);
+                        $this->encerrarConexoesSemRS($con, $stmt);
                         return true;
                     }
                     else {
                         // Se o código executar com erro ou não executar, encerra as conexões e retorna 'false'
-                        encerrarConexoesSemRS($con, $stmt);
+                        $this->encerrarConexoesSemRS($con, $stmt);
                         return false;
                     }
                 
@@ -301,7 +301,7 @@
                 else {
                     // Encerra as conexões e envia uma mensagem se ocorrer algum erro na criação do PreparedStatement
                     $erro = mysqli_connect_error();
-                    encerrarConexoesSemRS($con, $stmt);
+                    $this->encerrarConexoesSemRS($con, $stmt);
                     exit("\nErro ao definir PreparedStatement em UsuarioDAOMySQL->insert(): $erro");
                 }
                     
@@ -309,12 +309,12 @@
             else {
                 // Encerra as conexões e envia uma mensagem se ocorrer algum erro na criação da conexão
                 $erro = mysqli_connect_error();
-                encerrarConexoesSemRS($con, $stmt);
+                $this->encerrarConexoesSemRS($con, $stmt);
                 exit("\nErro ao definir Connection em UsuarioDAOMySQL->insert(): $erro");
             }
         }
 
-        public function selectAll() : ?array {
+        public function selectAll() : array | null {
             // Inicializa uma Query já pronta para a conexão
             $query = "SELECT * FROM $this->nomeTabela";
 
@@ -340,21 +340,21 @@
                         while(!empty($linha)) {
 
                             // Enquanto houverem linhas na tabela, salva os dados em um usuário e o adiciona no array de retorno
-                            $arrayRetorno[] = preencherUsuarioSaida($linha);
+                            $arrayRetorno[] = $this->preencherUsuarioSaida($linha);
 
                             // Avança para a próxima linha no ResultSet
                             $linha = $rs->fetch_assoc();
                         }
 
                         // Encerra as conexões e verifica se o array contém algum usuário. Se não conter retorna 'null', senão retorna o array.
-                        encerrarConexoesComRS($con, $stmt, $rs);
+                        $this->encerrarConexoesComRS($con, $stmt, $rs);
                         return (count($arrayRetorno) == 0) ? null : $arrayRetorno;
                     }
                     else {
 
                         // Encerra as conexões e envia uma mensagem se ocorrer algum erro na criação do ResultSet
                         $erro = mysqli_connect_error();
-                        encerrarConexoesComRS($con, $stmt, $rs);
+                        $this->encerrarConexoesComRS($con, $stmt, $rs);
                         exit("\nErro ao definir ResultSet em UsuarioDAOMySQL->selectAll(): $erro");
                     }
                 }
@@ -362,7 +362,7 @@
 
                     // Encerra as conexões e envia uma mensagem se ocorrer algum erro na criação do PreparedStatement
                     $erro = mysqli_connect_error();
-                    encerrarConexoesSemRS($con, $stmt);
+                    $this->encerrarConexoesSemRS($con, $stmt);
                     exit("\nErro ao definir PreparedStatement em UsuarioDAOMySQL->selectAll(): $erro");
                 }
                     
@@ -371,7 +371,7 @@
 
                 // Encerra as conexões e envia uma mensagem se ocorrer algum erro na criação da conexão
                 $erro = mysqli_connect_error();
-                encerrarConexoesSemRS($con, $stmt);
+                $this->encerrarConexoesSemRS($con, $stmt);
                 exit("\nErro ao definir Connection em UsuarioDAOMySQL->selectAll(): $erro");
             }
         }
@@ -391,7 +391,7 @@
             }
         }
 
-        public function selectWhere(UsuarioVO $uVO) : ?array {
+        public function selectWhere(UsuarioVO $uVO) : array | null {
             // Inicialização da query para pesquisa
             $query = "SELECT * FROM $this->nomeTabela WHERE ";
 
@@ -414,7 +414,7 @@
                         // ID
                         $id = $uVO->getId();
                         if(isset($id)) {
-                            addQueryWhere($query, $and);
+                            $this->addQueryWhere($query, $and);
                             $tiposAtributos .= "i";
                             $arrayAtributosFiltro[] = $id;
                         }
@@ -425,7 +425,7 @@
                         // Id de Tipo
                         $idTipo = $uVO->getIdTipoUsuario();
                         if(isset($idTipo)){
-                            addQueryWhere($query, $and, $i);
+                            $this->addQueryWhere($query, $and, $i);
                             $tiposAtributos .= "i";
                             $arrayAtributosFiltro[] = $idTipo;
                         }
@@ -436,7 +436,7 @@
                         // Login
                         $login = $uVO->getLogin();
                         if(isset($login)){
-                            addQueryWhere($query, $and, $i);
+                            $this->addQueryWhere($query, $and, $i);
                             $tiposAtributos .= "s";
                             $arrayAtributosFiltro[] = $login;
                         }
@@ -447,7 +447,7 @@
                         // Senha
                         $senha = $uVO->getSenha();
                         if(isset($senha)){
-                            addQueryWhere($query, $and, $i);
+                            $this->addQueryWhere($query, $and, $i);
                             $tiposAtributos .= "s";
                             $arrayAtributosFiltro[] = $senha;
                         }
@@ -458,7 +458,7 @@
                         // Nome
                         $nome = $uVO->getNome();
                         if(isset($nome)){
-                            addQueryWhere($query, $and, $i);
+                            $this->addQueryWhere($query, $and, $i);
                             $tiposAtributos .= "s";
                             $arrayAtributosFiltro[] = $nome;
                         }
@@ -469,7 +469,7 @@
                         // Email
                         $email = $uVO->getEmail();
                         if(isset($email)){
-                            addQueryWhere($query, $and, $i);
+                            $this->addQueryWhere($query, $and, $i);
                             $tiposAtributos .= "s";
                             $arrayAtributosFiltro[] = $email;
                         }
@@ -556,21 +556,21 @@
                         while(!empty($linha)) {
 
                             // Enquanto houverem linhas na tabela, salva os dados em um usuário e o adiciona no array de retorno
-                            $arrayRetorno[] = preencherUsuarioSaida($linha);
+                            $arrayRetorno[] = $this->preencherUsuarioSaida($linha);
 
                             // Avança para a próxima linha no ResultSet
                             $linha = $rs->fetch_assoc();
                         }
 
                         // Encerra as conexões e verifica se o array contém algum usuário. Se não conter retorna 'null', senão retorna o array.
-                        encerrarConexoesComRS($con, $stmt, $rs);
+                        $this->encerrarConexoesComRS($con, $stmt, $rs);
                         return (count($arrayRetorno) == 0) ? null : $arrayRetorno;
                     }
                     else {
 
                         // Encerra as conexões e envia uma mensagem se ocorrer algum erro na criação do ResultSet
                         $erro = mysqli_connect_error();
-                        encerrarConexoesComRS($con, $stmt, $rs);
+                        $this->encerrarConexoesComRS($con, $stmt, $rs);
                         exit("\nErro ao definir ResultSet em UsuarioDAOMySQL->selectWhere(): $erro");
                     }
                         
@@ -579,7 +579,7 @@
 
                     // Encerra as conexões e envia uma mensagem se ocorrer algum erro na criação do PreparedStatement
                     $erro = mysqli_connect_error();
-                    encerrarConexoesSemRS($con, $stmt);
+                    $this->encerrarConexoesSemRS($con, $stmt);
                     exit("\nErro ao definir PreparedStatement em UsuarioDAOMySQL->selectWhere(): $erro");
                 }
                     
@@ -588,7 +588,7 @@
 
                 // Encerra as conexões e envia uma mensagem se ocorrer algum erro na criação da conexão
                 $erro = mysqli_connect_error();
-                encerrarConexoesSemRS($con, $stmt);
+                $this->encerrarConexoesSemRS($con, $stmt);
                 exit("\nErro ao definir Connection em UsuarioDAOMySQL->selectWhere(): $erro");
             }
                 
@@ -619,7 +619,7 @@
 
                 if(!empty($stmt)) {
                     // Cria um array com todos os dados informados no usuário
-                    $dadosUsuario = criarArrayDados($uVO);
+                    $dadosUsuario = $this->criarArrayDados($uVO);
     
                     // Dá "bind" destes dados no PreparedStatement
                     $stmt->bind_param("issssi",
@@ -633,12 +633,12 @@
                 
                 if($stmt->execute()) {
                     // Se o código executar sem erro, encerra as conexões e retorna 'true'
-                    encerrarConexoesSemRS($con, $stmt);
+                    $this->encerrarConexoesSemRS($con, $stmt);
                     return true;
                 }
                 else {
                     // Se o código executar com erro ou não executar, encerra as conexões e retorna 'false'
-                    encerrarConexoesSemRS($con, $stmt);
+                    $this->encerrarConexoesSemRS($con, $stmt);
                     return false;
                 }
                 
@@ -646,14 +646,14 @@
                 else {
                     // Encerra as conexões e envia uma mensagem se ocorrer algum erro na criação do PreparedStatement
                     $erro = mysqli_connect_error();
-                    encerrarConexoesSemRS($con, $stmt);
+                    $this->encerrarConexoesSemRS($con, $stmt);
                     exit("\nErro ao definir PreparedStatement em UsuarioDAOMySQL->update(): $erro");
                 }
             }
             else {
                 // Encerra as conexões e envia uma mensagem se ocorrer algum erro na criação da conexão
                 $erro = mysqli_connect_error();
-                encerrarConexoesSemRS($con, $stmt);
+                $this->encerrarConexoesSemRS($con, $stmt);
                 exit("\nErro ao definir Connection em UsuarioDAOMySQL->update(): $erro");
             }
         }
@@ -679,26 +679,26 @@
 
                     if($stmt->execute()) {
                         // Se o código executar sem erro, encerra as conexões e retorna 'true'
-                        encerrarConexoesSemRS($con, $stmt);
+                        $this->encerrarConexoesSemRS($con, $stmt);
                         return true;
                     }
                     else {
                         // Se o código executar com erro ou não executar, encerra as conexões e retorna 'false'
-                        encerrarConexoesSemRS($con, $stmt);
+                        $this->encerrarConexoesSemRS($con, $stmt);
                         return false;
                     }
                 }
                 else {
                     // Encerra as conexões e envia uma mensagem se ocorrer algum erro na criação do PreparedStatement
                     $erro = mysqli_connect_error();
-                    encerrarConexoesSemRS($con, $stmt);
+                    $this->encerrarConexoesSemRS($con, $stmt);
                     exit("\nErro ao definir PreparedStatement em UsuarioDAOMySQL->delete(): $erro");
                 }
             }
             else {
                 // Encerra as conexões e envia uma mensagem se ocorrer algum erro na criação da conexão
                 $erro = mysqli_connect_error();
-                encerrarConexoesSemRS($con, $stmt);
+                $this->encerrarConexoesSemRS($con, $stmt);
                 exit("\nErro ao definir Connection em UsuarioDAOMySQL->delete(): $erro");
             }
         }
@@ -734,13 +734,13 @@
         /**
          * Chama a função 'selectAll' em 'interfaceUsuarioDAO'
          */
-        public function listarUsuarios() : ?array {return $this->interfaceUsuarioDAO->selectAll();}
+        public function listarUsuarios() : array | null {return $this->interfaceUsuarioDAO->selectAll();}
 
         /**
          * Chama a função 'selectWhere' em 'interfaceUsuarioDAO'
          * @param UsuarioVO $uVO - Objeto com todos os dados de filtragem de usuário para pesquisa
          */
-        public function pesquisarUsuario(UsuarioVO $uVO) : ?array {return $this->interfaceUsuarioDAO->selectWhere($uVO);}
+        public function pesquisarUsuario(UsuarioVO $uVO) : array | null {return $this->interfaceUsuarioDAO->selectWhere($uVO);}
 
         /**
          * Chama a função 'update' em 'interfaceUsuarioDAO'
@@ -770,6 +770,11 @@
         }
 
         // Getter estático para 'servicosUsuario'
-        public static function getServicosUsuario() : ServicosUsuario {return self::$SERVICOS_USUARIO;}
+        public static function getServicosUsuario() : ServicosUsuario {
+            if(empty(self::$SERVICOS_USUARIO))
+                self::$SERVICOS_USUARIO = new ServicosUsuario();
+
+            return self::$SERVICOS_USUARIO;
+        }
     }
 ?>
