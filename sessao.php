@@ -68,14 +68,14 @@
 
     <main>
         <section id="inicio-sessao">
-            <h2>Olá, <?php echo htmlspecialchars($nomeCompleto); ?>!</h2> <!-- Exibe o nome do usuário de acordo com dado da seção  -->
+            <h2>Olá, <?php echo htmlspecialchars($_SESSION[UsuarioVO::getNomesColunasTabela[4]]); ?>!</h2> <!-- Exibe o nome do usuário de acordo com dado da seção  -->
         </section>
 
         <section id="editar-usuario">
             <h3 style="text-align: center">Editar cadastro do usuário</h3>
 
             <div class="form-container" style="justify-content: center;">
-                <form name="cadastro" action="_php/atualizar_cadastro.php" method="post"> <!-- TODO: Depois configurar o back-end -->
+                <form name="cadastro" action="_php/modificar_cadastro.php" method="post"> <!-- TODO: Depois configurar o back-end -->
                     <!-- htmlspecialchars para campos já estarem preenchidos com os dados da seção do usuário (exceto senha): -->
                     <label for="login">Login:</label>
                     <input type="text" id="login" name="login" placeholder="usuario123" value="<?php echo htmlspecialchars($_SESSION[UsuarioVO::getNomesColunasTabela[2]]); ?>" required>
