@@ -23,14 +23,14 @@
          * Método que pesquisa e retorna todas as linhas na tabela 'Usuario' do banco de dados como um array.
          * @return void
          */
-        public function selectAll() : ?array;
+        public function selectAll() : array | null;
 
         /**
          * Método que recebe um objeto 'UsuarioVO', pesquisa na tabela 'Usuario' do banco de dados um registro que contenha todos os dados inicializados dentro do objeto e os retorna em um array.
          * @param UsuarioVO $uVO
          * @return void
          */
-        public function selectWhere(UsuarioVO $uVO) : ?array;
+        public function selectWhere(UsuarioVO $uVO) : array | null;
 
         /**
          * Método que recebe um objeto 'UsuarioVO' e atualiza seus dados em uma linha da tabela 'Usuario' no banco que contenha um ID correspondente.
