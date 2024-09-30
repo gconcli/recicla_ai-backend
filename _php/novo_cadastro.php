@@ -26,7 +26,7 @@
                 </script>";
         }
         else {
-            fazerLogin($login, $senha);
+            fazerLogin($login, $senha1);
         }
 
         session_start();
