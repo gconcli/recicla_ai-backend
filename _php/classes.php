@@ -191,8 +191,11 @@
                 if(!empty($stmt)) {
 
                     // Coloca 'login' no PreparedStatement e tenta executar e receber o resultado em um ResultSet
-                    $stmt->bind_param("s", $login);
-                    $rs = $stmt->get_result();
+                    $rs = $stmt->bind_param("s", $login);
+                    if($rs)
+                        $rs = $stmt->get_result();
+                    else
+                        $rs = null;
 
                     if(!empty($rs)) {
 
@@ -204,8 +207,9 @@
                             if(password_verify($senha, $linha[$this->nomesColunasTabela[3]])) {
 
                                 // Encerra as conexões e retorna o usuário se as senhas forem iguais
+                                $usuario = preencherUsuarioSaida($linha);
                                 encerrarConexoesComRetorno($con, $stmt, $rs);
-                                return preencherUsuarioSaida($linha);
+                                return $usuario;
                             }
                             else {
 
@@ -286,7 +290,8 @@
                         $dadosUsuario[5]
                     );
 
-                    if($stmt->execute()) {
+                    $flagExec = $stmt->execute();
+                    if($flagExec) {
                         // Se o código executar sem erro, encerra as conexões e retorna 'true'
                         $this->encerrarConexoesSemRS($con, $stmt);
                         return true;
@@ -631,7 +636,8 @@
                         $dadosUsuario[0]
                     );
                 
-                if($stmt->execute()) {
+                $flagExec = $stmt->execute();
+                if($flagExec) {
                     // Se o código executar sem erro, encerra as conexões e retorna 'true'
                     $this->encerrarConexoesSemRS($con, $stmt);
                     return true;
@@ -677,7 +683,8 @@
 
                     $stmt->bind_param("i", $idUsuario);
 
-                    if($stmt->execute()) {
+                    $flagExec = $stmt->execute();
+                    if($flagExec) {
                         // Se o código executar sem erro, encerra as conexões e retorna 'true'
                         $this->encerrarConexoesSemRS($con, $stmt);
                         return true;
@@ -771,8 +778,12 @@
 
         // Getter estático para 'servicosUsuario'
         public static function getServicosUsuario() : ServicosUsuario {
-            if(empty(self::$SERVICOS_USUARIO))
-                self::$SERVICOS_USUARIO = new ServicosUsuario();
+            for ($i = 0; $i < 9; $i++) { 
+                if(empty(self::$SERVICOS_USUARIO))
+                    self::$SERVICOS_USUARIO = new ServicosUsuario();
+                else
+                    break;
+            }
 
             return self::$SERVICOS_USUARIO;
         }
